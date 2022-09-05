@@ -1,0 +1,3 @@
+package people
+
+func PeopleList() {}
