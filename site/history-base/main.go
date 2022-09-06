@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"net/http"
-
 	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/db"
+	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/people"
 	"github.com/stack-labs/stack"
 	"github.com/stack-labs/stack/service/web"
+	"net/http"
 
 	// db
 	_ "github.com/mattn/go-sqlite3"
@@ -19,17 +19,22 @@ func main() {
 	)
 	s.Init(
 		stack.BeforeStart(func() error {
-			db.Init(context.Background())
-			return nil
+			err := db.Init(context.Background())
+			return err
 		}),
+		stack.WebRootPath("/history"),
 		stack.WebHandleFuncs(
-			web.HandlerFunc{
-				Route: "hello",
-				Func: func(w http.ResponseWriter, r *http.Request) {
-					w.Write([]byte(`hello world`))
-				},
-			},
+			append(people.Handlers(), HelloWorld())...,
 		),
 	)
 	s.Run()
+}
+
+func HelloWorld() web.HandlerFunc {
+	return web.HandlerFunc{
+		Route: "hello",
+		Func: func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte(`hello world`))
+		},
+	}
 }

@@ -1,0 +1,5 @@
+stack:
+  includes: stack-db.yml
+  server:
+    name: history-base
+    address: :8899

@@ -4,10 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
+	log "github.com/stack-labs/stack/logger"
 )
 
 func initSQLite(ctx context.Context) error {
-	sqliteDB, err := sql.Open("sqlite3", "../database/all-data.db")
+	log.Infof(c.DB.SQLite.Path)
+	sqliteDB, err := sql.Open("sqlite3", c.DB.SQLite.Path)
 	if err != nil {
 		return fmt.Errorf("initSQLite err: %s", err)
 	}
