@@ -12,7 +12,7 @@ import (
 func Handlers() []web.HandlerFunc {
 	return []web.HandlerFunc{
 		{
-			"people",
+			"peoples",
 			List,
 		},
 	}
