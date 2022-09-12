@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/login"
 	"net/http"
 
 	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/db"
@@ -25,7 +26,7 @@ func main() {
 		}),
 		stack.WebRootPath("/history"),
 		stack.WebHandleFuncs(
-			append(people.Handlers(), HelloWorld())...,
+			handlers()...,
 		),
 	)
 	s.Run()
@@ -38,4 +39,12 @@ func HelloWorld() web.HandlerFunc {
 			w.Write([]byte(`hello world`))
 		},
 	}
+}
+
+func handlers() []web.HandlerFunc {
+	var ret []web.HandlerFunc
+	ret = append(people.Handlers(), HelloWorld())
+	ret = append(ret, login.Handlers()...)
+
+	return ret
 }

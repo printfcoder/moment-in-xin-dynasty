@@ -1,6 +1,7 @@
 package people
 
 import (
+	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/common"
 	"net/http"
 	"strconv"
 
@@ -19,7 +20,7 @@ func Handlers() []web.HandlerFunc {
 }
 
 func List(w http.ResponseWriter, r *http.Request) {
-	rsp := &HTTPRsp{}
+	rsp := &common.HTTPRsp{}
 	var peoples []*People
 
 	pageNo, _ := strconv.Atoi(r.URL.Query().Get("pageNo"))
@@ -51,7 +52,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 
 		peoples = append(peoples, &p)
 	}
-	rsp.Data = &PageData{
+	rsp.Data = &common.PageData{
 		List: peoples,
 	}
 
@@ -63,17 +64,4 @@ ret:
 			return
 		}
 	}
-}
-
-type HTTPRsp struct {
-	ErrorNo     string      `json:"errNo,omitempty"`
-	ErrorMsg    string      `json:"errMsg,omitempty"`
-	ErrorOriMsg string      `json:"errOriMsg,omitempty"`
-	Data        interface{} `json:"data,omitempty"`
-}
-
-type PageData struct {
-	PageNo   int         `json:"pageNo,omitempty"`
-	PageSize int         `json:"pageSize,omitempty"`
-	List     interface{} `json:"list,omitempty"`
 }
