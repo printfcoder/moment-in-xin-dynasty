@@ -1,11 +1,13 @@
 .idea
 .DS_Store
 ~*
-history-demo
+
 stack-db.yml
 
 .husky
 node_modules
+.umi
+
 /.env.local
 /.umirc.local.ts
 /config/config.local.ts
