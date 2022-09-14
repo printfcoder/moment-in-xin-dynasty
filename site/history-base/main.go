@@ -24,7 +24,7 @@ func main() {
 			err := db.Init(context.Background())
 			return err
 		}),
-		stack.WebRootPath("/history"),
+		stack.WebRootPath("/api/history"),
 		stack.WebHandleFuncs(
 			handlers()...,
 		),
