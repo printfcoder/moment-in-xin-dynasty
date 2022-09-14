@@ -4,7 +4,8 @@
 history-demo
 stack-db.yml
 
-/node_modules
+.husky
+node_modules
 /.env.local
 /.umirc.local.ts
 /config/config.local.ts
