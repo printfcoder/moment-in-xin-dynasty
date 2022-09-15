@@ -14,6 +14,9 @@ import {Button, Drawer, message} from 'antd';
 import React, {useRef, useState} from 'react';
 import type {FormValueType} from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
+import PeopleForm from './components/PeopleForm';
+import {PlusOutlined} from "@ant-design/icons";
+
 
 /**
  * @en-US Add node
@@ -152,7 +155,15 @@ const PeopleList: React.FC = () => {
             collapsed: false,
           }
         }
-        toolBarRender={false}
+        toolBarRender={() => [
+          <Button key="3" type="primary">
+            onClick={() => {
+            handleModalVisible(true);
+          }}
+            <PlusOutlined/>
+            New
+          </Button>,
+        ]}
         request={peoples}
         columns={columns}
         rowSelection={{
@@ -249,6 +260,8 @@ const PeopleList: React.FC = () => {
         updateModalVisible={updateModalVisible}
         values={currentRow || {}}
       />
+
+      <PeopleForm updateModalVisible={!updateModalVisible}/>
 
       <Drawer
         width={600}

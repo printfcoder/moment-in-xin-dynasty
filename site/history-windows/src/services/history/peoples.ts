@@ -13,7 +13,7 @@ export async function peoples(
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.HTTPRsp<API.PageData<API.PeopleListItem>>>('/api/history/peoples', {
+  return request<Common.HTTPRsp<Common.PageData<History.PeopleListItem>>>('/api/history/peoples', {
     method: 'GET',
     params: {
       ...params,
