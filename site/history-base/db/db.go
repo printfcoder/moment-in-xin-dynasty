@@ -36,7 +36,7 @@ func Init(ctx context.Context) error {
 	s.Lock()
 	defer s.Unlock()
 
-	log.Info("beging to init db.")
+	log.Info("begin to init db.")
 
 	if db != nil {
 		log.Warnf("db has been inited")
