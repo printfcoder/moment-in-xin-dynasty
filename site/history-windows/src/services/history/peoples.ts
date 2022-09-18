@@ -5,7 +5,8 @@ import {request} from '@umijs/max';
 /** 获取规则列表 GET /api/rule */
 export async function peoples(
   params: {
-    // query
+    /** 名字搜索 */
+    name?: string,
     /** 当前的页码 */
     pageNo?: number;
     /** 页面的容量 */
@@ -19,7 +20,7 @@ export async function peoples(
       ...params,
     },
     ...(options || {}),
-  }).then((rsp: API.HTTPRsp<API.PageData<API.PeopleListItem>>) => {
+  }).then((rsp: Common.HTTPRsp<Common.PageData<History.PeopleListItem>>) => {
     return toAntDPage(rsp)
   })
 }
@@ -31,7 +32,6 @@ export async function addPeople(options?: { [key: string]: any }) {
     ...(options || {}),
   });
 }
-
 
 /** 新建规则 PUT /api/rule */
 export async function updatePeople(options?: { [key: string]: any }) {
@@ -52,10 +52,13 @@ export async function removePeople(options?: { [key: string]: any }) {
 /**
  * 转成antDesign的Page格式
  */
-function toAntDPage(backendData: API.HTTPRsp<API.PageData<API.PeopleListItem>>) {
-  let ret: API.AntDesignPage = {}
+function toAntDPage(backendData: Common.HTTPRsp<Common.PageData<History.PeopleListItem>>) {
+  let ret: Common.AntDesignPage<History.PeopleListItem> = {
+    data: [],
+    total: 0,
+  }
 
-  if (backendData.data != null) {
+  if (backendData.data && backendData.data.list) {
     ret.data = backendData.data.list
     ret.total = backendData.data.total
   }

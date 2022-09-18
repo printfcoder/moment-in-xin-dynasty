@@ -36,10 +36,10 @@ declare namespace API {
 
   type PeopleListItem = {
     key?: number;
-    id?: number;
-    name?: string;
-    birthday?: string;
-    deathday?: string;
+    id: number;
+    name: string;
+    birthday: string;
+    deathday: string;
   }
 
   type HTTPRsp<T> = {

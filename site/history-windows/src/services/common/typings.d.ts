@@ -24,9 +24,14 @@ declare namespace Common {
     list?: T[];
   }
 
-  type AntDesignPage = {
-    data?: any[];
+  type AntDesignPage<T> = {
+    data: T[];
     /** 列表的内容总数 */
-    total?: number;
+    total: number;
   };
+
+  type Select = {
+    label: string,
+    value: any,
+  }
 }
