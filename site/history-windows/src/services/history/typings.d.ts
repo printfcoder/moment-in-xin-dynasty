@@ -11,8 +11,8 @@ declare namespace History {
     key?: number;
     id: number;
     name: string;
-    birthday: string;
-    deathday: string;
+    birthDay: string;
+    deathDay: string;
   }
 
   type PeopleRelation = {

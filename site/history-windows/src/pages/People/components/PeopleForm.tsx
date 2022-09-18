@@ -8,10 +8,9 @@ import {
   ProFormDependency,
   ProFormText,
 } from '@ant-design/pro-components';
-import {Button, Form, message} from 'antd';
+import {Button, Form, message, Input} from 'antd';
 import React from "react";
 import {peoples} from "@/services/history/peoples";
-import PeopleList from "@/pages/People";
 
 export type FormValueType = {
   target?: string;
@@ -107,32 +106,33 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
                 />
                 <ProFormDependency name={['relationPeople']}>
                   {({relationPeople}) => {
-                    return <ProFormText disabled={true} width={30} initialValue={relationPeople}
-                                        name="rowKey" label={`id`}/>
-                  }}
-                </ProFormDependency>
-                <ProFormDependency name={['relationPeople']}>
-                  {({relationPeople}) => {
+                    let birth2deathDay: string = ""
+                    let people: History.PeopleListItem;
                     if (allPeoples != null) {
-                      let people: History.PeopleListItem;
-                      allPeoples && allPeoples.forEach((v) => {
+                      allPeoples.some((v) => {
                         if (v.id == relationPeople) {
                           people = v
-                          return
+                          return true
                         }
+
+                        return false
                       })
+
                       if (people == null) {
                         message.error('未找到人物!');
                         return
                       }
-                      const birth2deathDay: string = people.birthday + "-" + people.deathday
-                      return <ProFormText disabled={true} width={30}
-                                          initialValue={"" || birth2deathDay} name="birth2deathDay"
-                                          label={`生忌日`}/>
+                      birth2deathDay = people.birthDay + "-" + people.deathDay
                     }
-                    return <ProFormText disabled={true} width={30}
-                                        initialValue={""} name="birth2deathDay"
-                                        label={`生忌日`}/>
+
+                    return <>
+                      <ProFormText bordered={false} label={"id"}>
+                        {people && people.id}
+                      </ProFormText>
+                      <ProFormText bordered={false} label={"生忌日"}>
+                        {birth2deathDay}
+                      </ProFormText>
+                    </>
                   }}
                 </ProFormDependency>
                 <ProFormSelect
