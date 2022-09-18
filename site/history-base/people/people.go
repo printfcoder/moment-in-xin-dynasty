@@ -1,5 +1,7 @@
 package people
 
+import "github.com/stack-labs/stack/config"
+
 type People struct {
 	ID       uint   `json:"id,omitempty"`
 	Name     string `json:"name,omitempty"`
@@ -14,4 +16,19 @@ type Relation struct {
 	RelationIdx   uint   `json:"relationIdx,omitempty"`
 	RelationBegin string `json:"relationBegin,omitempty"`
 	RelationEnd   string `json:"relationEnd,omitempty"`
+}
+
+type PeopleConfig struct {
+	People struct {
+		RelationEnum string `sc:"relation-enum"`
+	} `sc:"people"`
+}
+
+var (
+	PEOPLE_RELATIONS = []string{""}
+	c                PeopleConfig
+)
+
+func init() {
+	config.RegisterOptions(&c)
 }

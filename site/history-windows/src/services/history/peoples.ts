@@ -2,6 +2,8 @@
 /* eslint-disable */
 import {request} from '@umijs/max';
 
+let loadedRelationEnum: any[] = [];
+
 /** 获取规则列表 GET /api/rule */
 export async function peoples(
   params: {
@@ -48,6 +50,27 @@ export async function removePeople(options?: { [key: string]: any }) {
     ...(options || {}),
   });
 }
+
+/** 人物关系枚举 */
+export async function RelationEnum(options?: { [key: string]: any }) {
+  if (loadedRelationEnum.length > 0) {
+    return loadedRelationEnum
+  }
+  return request<Common.HTTPRsp<String[]>>('/api/history/relation-enum', {
+    method: 'GET',
+    ...(options || {}),
+  }).then((rsp: Common.HTTPRsp<String[]>) => {
+    rsp.data && rsp.data.forEach(v => {
+      loadedRelationEnum.push({
+        label: v,
+        value: v,
+      })
+    })
+
+    return loadedRelationEnum
+  })
+}
+
 
 /**
  * 转成antDesign的Page格式

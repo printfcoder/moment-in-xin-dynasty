@@ -15,6 +15,12 @@ declare namespace History {
     deathDay: string;
   }
 
+  type PeopleRelationEnum = {
+    key?: number;
+    peopleId: number;
+    relation: string;
+  }
+
   type PeopleRelation = {
     key?: number;
     peopleId: number;

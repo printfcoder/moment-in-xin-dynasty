@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/common"
 	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/db"
@@ -16,6 +17,10 @@ func Handlers() []web.HandlerFunc {
 		{
 			"peoples",
 			List,
+		},
+		{
+			"relation-enum",
+			RelationEnum,
 		},
 	}
 }
@@ -84,5 +89,19 @@ ret:
 			log.Errorf("return json error, %s", err)
 			return
 		}
+	}
+}
+
+func RelationEnum(w http.ResponseWriter, r *http.Request) {
+	enums := strings.Split(c.People.RelationEnum, ",")
+	for i, enum := range enums {
+		enums[i] = strings.TrimSpace(enum)
+	}
+	_, err := web.HTTPJSON(w, &common.HTTPRsp{
+		Data: enums,
+	})
+	if err != nil {
+		log.Errorf("return json error, %s", err)
+		return
 	}
 }

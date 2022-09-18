@@ -1,5 +1,5 @@
 stack:
-  includes: stack-db.yml
+  includes: stack-db.yml, stack-biz.yml
   server:
     name: history-base
     address: :8899

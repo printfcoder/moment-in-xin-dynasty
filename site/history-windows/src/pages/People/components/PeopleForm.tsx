@@ -10,7 +10,7 @@ import {
 } from '@ant-design/pro-components';
 import {Button, Form, message, Input} from 'antd';
 import React from "react";
-import {peoples} from "@/services/history/peoples";
+import {peoples, RelationEnum} from "@/services/history/peoples";
 
 export type FormValueType = {
   target?: string;
@@ -138,13 +138,9 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
                 <ProFormSelect
                   name="relation"
                   label="关系"
+                  showSearch={true}
                   dependencies={['name']}
-                  request={async (params) => [
-                    {label: params.name, value: 'all'},
-                    {label: 'Unresolved', value: 'open'},
-                    {label: 'Resolved', value: 'closed'},
-                    {label: 'Resolving', value: 'processing'},
-                  ]}
+                  request={RelationEnum}
                 />
               </>
             );
