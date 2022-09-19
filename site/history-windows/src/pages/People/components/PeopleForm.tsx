@@ -31,6 +31,7 @@ let allPeoples: History.PeopleListItem[];
 
 const PeopleForm: React.FC<PeopleFormProps> = (props) => {
   const [form] = Form.useForm<{ name: string; birthday: string, deathday: string, relationPeoples: History.PeopleRelation[] }>();
+
   return (
     <ModalForm<{
       name: string;
@@ -69,11 +70,6 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
         <ProFormList
           name={['relationPeoples']}
           label="关系"
-          initialValue={[
-            {
-              name: '选择人物',
-            },
-          ]}
           itemContainerRender={(doms) => {
             return <ProFormGroup>{doms}</ProFormGroup>;
           }}
@@ -126,10 +122,10 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
                     }
 
                     return <>
-                      <ProFormText bordered={false} label={"id"}>
+                      <ProFormText width={40} bordered={false} label={"id"}>
                         {people && people.id}
                       </ProFormText>
-                      <ProFormText bordered={false} label={"生忌日"}>
+                      <ProFormText width={"sm"} bordered={false} label={"生忌日"}>
                         {birth2deathDay}
                       </ProFormText>
                     </>

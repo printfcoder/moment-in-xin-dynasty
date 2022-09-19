@@ -41,7 +41,7 @@ export const errorConfig: RequestConfig = {
     },
     // 错误接收及处理
     errorHandler: (error: any, opts: any) => {
-      message.error(error)
+      message.error(error.message)
       console.log(opts)
     },
   },
