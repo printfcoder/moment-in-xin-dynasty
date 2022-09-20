@@ -7,7 +7,7 @@ declare namespace History {
     pageSize?: number;
   };
 
-  type PeopleListItem = {
+  type People = {
     key?: number;
     id: number;
     name: string;
@@ -28,7 +28,7 @@ declare namespace History {
   }
 
   type PeopleList = {
-    data?: PeopleListItem[];
+    data?: People[];
     /** 列表的内容总数 */
     total?: number;
     success?: boolean;

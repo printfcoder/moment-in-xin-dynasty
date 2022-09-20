@@ -16,20 +16,20 @@ export async function peoples(
   },
   options?: { [key: string]: any },
 ) {
-  return request<Common.HTTPRsp<Common.PageData<History.PeopleListItem>>>('/api/history/peoples', {
+  return request<Common.HTTPRsp<Common.PageData<History.People>>>('/api/history/peoples', {
     method: 'GET',
     params: {
       ...params,
     },
     ...(options || {}),
-  }).then((rsp: Common.HTTPRsp<Common.PageData<History.PeopleListItem>>) => {
+  }).then((rsp: Common.HTTPRsp<Common.PageData<History.People>>) => {
     return toAntDPage(rsp)
   })
 }
 
 /** 新建规则 POST /api/rule */
 export async function addPeople(options?: { [key: string]: any }) {
-  return request<API.RuleListItem>('/api/history/people', {
+  return request<API.RuleListItem>('/api/history/people-add', {
     method: 'POST',
     ...(options || {}),
   });
@@ -37,7 +37,7 @@ export async function addPeople(options?: { [key: string]: any }) {
 
 /** 新建规则 PUT /api/rule */
 export async function updatePeople(options?: { [key: string]: any }) {
-  return request<API.RuleListItem>('/api/history/people-add', {
+  return request<API.RuleListItem>('/api/history/people-update', {
     method: 'POST',
     ...(options || {}),
   });
@@ -75,8 +75,8 @@ export async function RelationEnum(options?: { [key: string]: any }) {
 /**
  * 转成antDesign的Page格式
  */
-function toAntDPage(backendData: Common.HTTPRsp<Common.PageData<History.PeopleListItem>>) {
-  let ret: Common.AntDesignPage<History.PeopleListItem> = {
+function toAntDPage(backendData: Common.HTTPRsp<Common.PageData<History.People>>) {
+  let ret: Common.AntDesignPage<History.People> = {
     data: [],
     total: 0,
   }

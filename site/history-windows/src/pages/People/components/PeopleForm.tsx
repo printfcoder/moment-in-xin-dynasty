@@ -1,16 +1,15 @@
-import {HistoryOutlined, PlusOutlined} from '@ant-design/icons';
+import {PlusOutlined} from '@ant-design/icons';
 import {
   ModalForm,
-  ProForm,
   ProFormGroup,
   ProFormList,
   ProFormSelect,
   ProFormDependency,
-  ProFormText,
+  ProFormText, ActionType, ProFormDigit, ProCard,
 } from '@ant-design/pro-components';
-import {Button, Form, message, Input} from 'antd';
-import React from "react";
-import {peoples, RelationEnum} from "@/services/history/peoples";
+import {Button, Form, message} from 'antd';
+import React, {useRef} from "react";
+import {addPeople, peoples, RelationEnum} from "@/services/history/peoples";
 
 export type FormValueType = {
   target?: string;
@@ -24,21 +23,21 @@ export type PeopleFormProps = {
   onCancel?: (flag?: boolean, formVals?: FormValueType) => void;
   onSubmit?: (values: FormValueType) => Promise<void>;
   updateModalVisible: boolean
-  values?: Partial<History.PeopleListItem>;
+  values?: Partial<History.People>;
 };
 
-let allPeoples: History.PeopleListItem[];
+let allPeoples: History.People[];
 
 const PeopleForm: React.FC<PeopleFormProps> = (props) => {
-  const [form] = Form.useForm<{ name: string; birthday: string, deathday: string, relationPeoples: History.PeopleRelation[] }>();
+  const [form] = Form.useForm<{ people: History.People, relationPeoples: History.PeopleRelation[] }>();
+  const actionRef = useRef<ActionType>();
 
   return (
     <ModalForm<{
-      name: string;
-      birthday: string;
-      deathday: string;
+      people: History.People;
       relationPeoples: History.PeopleRelation[];
     }>
+      width={1200}
       layout="horizontal"
       open={props.updateModalVisible}
       title={props.updateModalVisible ? "修改人物" : "新增人物"}
@@ -55,92 +54,105 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
         onCancel: () => console.log('run'),
       }}
       submitTimeout={2000}
-      onFinish={props.onSubmit}
+      onFinish={async (formData) => {
+        console.log(formData)
+        const success = await addPeople(formData);
+        if (success) {
+          props.updateModalVisible = false;
+          if (actionRef.current) {
+            actionRef.current.reload();
+          }
+        }
+      }}
     >
-      <ProForm.Group>
+      <ProFormGroup key="people">
         <ProFormText
-          name="name"
+          name={["people", "name"]}
           width={120}
           label="姓名"
         />
-        <ProFormText name="birthday" label="生日" placeholder="请输入生日"/>
-        <ProFormText name="deathday" label="忌日" placeholder="请输入忌日"/>
-      </ProForm.Group>
-      <ProFormGroup>
+        <ProFormText name={["people", "birthDay"]} label="生日" placeholder="请输入生日"/>
+        <ProFormText name={["people", "deathDay"]} label="忌日" placeholder="请输入忌日"/>
+      </ProFormGroup>
+      <ProFormGroup key="relationPeoples">
         <ProFormList
           name={['relationPeoples']}
           label="关系"
-          itemContainerRender={(doms) => {
-            return <ProFormGroup>{doms}</ProFormGroup>;
-          }}
+          rules={[
+            {
+              validator: async (_, value) => {
+                console.log(value);
+                if (value && value.length > 0) {
+                  return;
+                }
+                throw new Error('至少要有一项！');
+              },
+            },
+          ]}
         >
-          {(f, index, action) => {
-            console.log(f, index, action);
-            return (
-              <>
-                <ProFormSelect
-                  name="relationPeople"
-                  label=""
-                  showSearch={true}
-                  request={async ({keyWords}) => {  // request使用params传入的参数，每次都触发了
-                    const arr: any = [];
-                    if (allPeoples == null) {
-                      const res = await peoples({name: keyWords});
-                      if (res) {
-                        allPeoples = res.data
-                      }
-                    }
-                    allPeoples && allPeoples.forEach(v => {
-                      arr.push({
-                        label: v.name,
-                        value: v.id,
-                      })
-                    })
+          <ProFormGroup key="group">
+            <ProFormSelect
+              name="relationPeople"
+              label=""
+              showSearch={true}
+              request={async ({keyWords}) => {  // request使用params传入的参数，每次都触发了
+                const arr: any = [];
+                if (allPeoples == null) {
+                  const res = await peoples({name: keyWords});
+                  if (res) {
+                    allPeoples = res.data
+                  }
+                }
+                allPeoples && allPeoples.forEach(v => {
+                  arr.push({
+                    label: v.name,
+                    value: v.id,
+                  })
+                })
 
-                    return arr;
-                  }}
-                />
-                <ProFormDependency name={['relationPeople']}>
-                  {({relationPeople}) => {
-                    let birth2deathDay: string = ""
-                    let people: History.PeopleListItem;
-                    if (allPeoples != null) {
-                      allPeoples.some((v) => {
-                        if (v.id == relationPeople) {
-                          people = v
-                          return true
-                        }
+                return arr;
+              }}
+            />
 
-                        return false
-                      })
-
-                      if (people == null) {
-                        message.error('未找到人物!');
-                        return
-                      }
-                      birth2deathDay = people.birthDay + "-" + people.deathDay
+            <ProFormDependency name={['relationPeople']}>
+              {({relationPeople}) => {
+                let birth2deathDay: string = ""
+                let people: History.People;
+                if (allPeoples != null) {
+                  allPeoples.some((v) => {
+                    if (v.id == relationPeople) {
+                      people = v
+                      return true
                     }
 
-                    return <>
-                      <ProFormText width={40} bordered={false} label={"id"}>
-                        {people && people.id}
-                      </ProFormText>
-                      <ProFormText width={"sm"} bordered={false} label={"生忌日"}>
-                        {birth2deathDay}
-                      </ProFormText>
-                    </>
-                  }}
-                </ProFormDependency>
-                <ProFormSelect
-                  name="relation"
-                  label="关系"
-                  showSearch={true}
-                  dependencies={['name']}
-                  request={RelationEnum}
-                />
-              </>
-            );
-          }}
+                    return false
+                  })
+
+                  if (people == null) {
+                    message.error('未找到人物!');
+                    return
+                  }
+                  birth2deathDay = people.birthDay + "-" + people.deathDay
+                }
+
+                return <>
+                  <ProFormText bordered={false} label={"识别"}>
+                    {people && people.id}: {birth2deathDay}
+                  </ProFormText>
+                </>
+              }}
+            </ProFormDependency>
+            <ProFormSelect
+              name="relation"
+              label="关系"
+              showSearch={true}
+              dependencies={['name']}
+              request={RelationEnum}
+            />
+            <ProFormDigit name="relationIdx" min={1} label="顺位"/>
+            <ProFormText name="relationBegin" label="始"/>
+            <ProFormText name="relationEnd" label="终"/>
+          </ProFormGroup>
         </ProFormList>
       </ProFormGroup>
     </ModalForm>
