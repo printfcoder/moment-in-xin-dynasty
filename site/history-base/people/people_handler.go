@@ -92,6 +92,10 @@ ret:
 	}
 }
 
+func Add(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func RelationEnum(w http.ResponseWriter, r *http.Request) {
 	enums := strings.Split(c.People.RelationEnum, ",")
 	for i, enum := range enums {
