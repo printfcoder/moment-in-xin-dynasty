@@ -18,15 +18,20 @@ type Relation struct {
 	RelationEnd   string `json:"relationEnd,omitempty"`
 }
 
-type PeopleConfig struct {
+type PeopleRelation struct {
+	People    People     `json:"people"`
+	Relations []Relation `json:"relations,omitempty"`
+}
+
+// BootConfig 启动配置
+type BootConfig struct {
 	People struct {
 		RelationEnum string `sc:"relation-enum"`
 	} `sc:"people"`
 }
 
 var (
-	PEOPLE_RELATIONS = []string{""}
-	c                PeopleConfig
+	c BootConfig
 )
 
 func init() {

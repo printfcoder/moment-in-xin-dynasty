@@ -1,13 +1,12 @@
 package people
 
 import (
-	"database/sql"
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/common"
-	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/db"
 	log "github.com/stack-labs/stack/logger"
 	"github.com/stack-labs/stack/service/web"
 )
@@ -16,22 +15,21 @@ func Handlers() []web.HandlerFunc {
 	return []web.HandlerFunc{
 		{
 			"peoples",
-			List,
+			ListHandler,
 		},
 		{
 			"relation-enum",
 			RelationEnum,
 		},
+		{
+			"people-add",
+			AddHandler,
+		},
 	}
 }
 
-func List(w http.ResponseWriter, r *http.Request) {
+func ListHandler(w http.ResponseWriter, r *http.Request) {
 	rsp := &common.HTTPRsp{}
-	var peoples []*People
-	var count = 0
-	var rows *sql.Rows
-	var err error
-
 	pageNo, _ := strconv.Atoi(r.URL.Query().Get("pageNo"))
 	if pageNo < 1 {
 		pageNo = 1
@@ -40,60 +38,52 @@ func List(w http.ResponseWriter, r *http.Request) {
 	if pageSize < 1 {
 		pageSize = 10
 	}
-	row := db.DB().QueryRow("SELECT COUNT(1) FROM people")
-	if row.Err() != nil {
-		rsp.Error = common.Error{
-			No:     "100001",
-			Msg:    "查询数据库总数失败",
-			OriMsg: row.Err().Error(),
-		}
 
-		goto ret
-	}
-	_ = row.Scan(&count)
-
-	rows, err = db.DB().Query("SELECT id, name, birthday, deathday FROM people ORDER BY id LIMIT ?, ?", (pageNo-1)*pageSize, pageSize)
+	peoples, count, err := List(pageNo, pageSize)
 	if err != nil {
-		rsp.Error = common.Error{
-			No:     "100002",
-			Msg:    "查询数据库失败",
-			OriMsg: err.Error(),
-		}
-
-		goto ret
+		writeFailHTTP(w, rsp, err)
+		return
 	}
 
-	for rows.Next() {
-		p := People{}
-		err = rows.Scan(&p.ID, &p.Name, &p.BirthDay, &p.DeathDay)
-		if err != nil {
-			rsp.Error = common.Error{
-				No:     "100003",
-				Msg:    "查询Scan失败",
-				OriMsg: err.Error(),
-			}
-			goto ret
-		}
-
-		peoples = append(peoples, &p)
-	}
 	rsp.Data = &common.PageData{
 		List:  peoples,
 		Total: count,
 	}
 
-ret:
-	{
-		_, err = web.HTTPJSON(w, rsp)
-		if err != nil {
-			log.Errorf("return json error, %s", err)
-			return
-		}
-	}
+	writeSuccessHTTP(w, rsp)
 }
 
-func Add(w http.ResponseWriter, r *http.Request) {
+func AddHandler(w http.ResponseWriter, r *http.Request) {
+	var pr PeopleRelation
+	rsp := &common.HTTPRsp{}
 
+	err := json.NewDecoder(r.Body).Decode(&pr)
+	if err != nil {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorInvalidJSONBody, err))
+		return
+	}
+
+	if len(pr.People.Name) == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidName, err))
+		return
+	}
+
+	if len(pr.People.BirthDay) == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidBirthDay, err))
+		return
+	}
+
+	if len(pr.People.DeathDay) == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidDeathDay, err))
+		return
+	}
+
+	err = Add(pr)
+	if err != nil {
+		writeFailHTTP(w, rsp, err)
+		return
+	}
+	writeSuccessHTTP(w, rsp)
 }
 
 func RelationEnum(w http.ResponseWriter, r *http.Request) {
@@ -101,9 +91,25 @@ func RelationEnum(w http.ResponseWriter, r *http.Request) {
 	for i, enum := range enums {
 		enums[i] = strings.TrimSpace(enum)
 	}
-	_, err := web.HTTPJSON(w, &common.HTTPRsp{
+
+	writeSuccessHTTP(w, &common.HTTPRsp{
 		Data: enums,
 	})
+}
+
+func writeFailHTTP(w http.ResponseWriter, rsp *common.HTTPRsp, err error) {
+	rsp.Success = false
+	rsp.Error = err.(*common.Error)
+	_, e := web.HTTPJSON(w, rsp)
+	if e != nil {
+		log.Errorf("return json error, %s", err)
+		return
+	}
+}
+
+func writeSuccessHTTP(w http.ResponseWriter, rsp *common.HTTPRsp) {
+	rsp.Success = true
+	_, err := web.HTTPJSON(w, rsp)
 	if err != nil {
 		log.Errorf("return json error, %s", err)
 		return
