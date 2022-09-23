@@ -3,10 +3,10 @@ package people
 import (
 	"database/sql"
 	"fmt"
-	log "github.com/stack-labs/stack/logger"
 
 	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/common"
 	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/db"
+	log "github.com/stack-labs/stack/logger"
 )
 
 func List(pageNo, pageSize int) (peoples []*People, count int, err error) {
