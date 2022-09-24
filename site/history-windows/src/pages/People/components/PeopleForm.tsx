@@ -116,30 +116,34 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
 
             <ProFormDependency name={['relationPeople']}>
               {({relationPeople}) => {
-                let birth2deathDay: string = ""
-                let people: History.People;
-                if (allPeoples != null) {
-                  allPeoples.some((v) => {
-                    if (v.id == relationPeople) {
-                      people = v
-                      return true
+                if (relationPeople != null) {
+                  let birth2deathDay: string = ""
+                  let people: History.People;
+                  if (allPeoples != null) {
+                    allPeoples.some((v) => {
+                      if (v.id == relationPeople) {
+                        people = v
+                        return true
+                      }
+
+                      return false
+                    })
+
+                    if (people == null) {
+                      message.error('未找到人物!');
+                      return
                     }
-
-                    return false
-                  })
-
-                  if (people == null) {
-                    message.error('未找到人物!');
-                    return
+                    birth2deathDay = people.birthDay + "-" + people.deathDay
                   }
-                  birth2deathDay = people.birthDay + "-" + people.deathDay
-                }
 
-                return <>
-                  <ProFormText bordered={false} label={"识别"}>
-                    {people && people.id}: {birth2deathDay}
-                  </ProFormText>
-                </>
+                  return <>
+                    <ProFormText bordered={false} label={"识别"}>
+                      {people && people.id}: {birth2deathDay}
+                    </ProFormText>
+                  </>
+                } else {
+                  return <></>
+                }
               }}
             </ProFormDependency>
             <ProFormSelect
