@@ -29,7 +29,7 @@ export async function peoples(
 
 /** 新建规则 POST /api/rule */
 export async function addPeople(options?: { [key: string]: any }) {
-  return request<API.RuleListItem>('/api/history/people-add', {
+  return request<Common.HTTPRsp<any>>('/api/history/people-add', {
     method: 'POST',
     ...(options || {}),
   });

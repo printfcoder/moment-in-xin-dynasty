@@ -90,7 +90,7 @@ const PeopleList: React.FC = () => {
    * @en-US Pop-up window of new window
    * @zh-CN 新建窗口的弹窗
    *  */
-  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
+  const [isModalOpen, handleModalVisible] = useState<boolean>(false);
   /**
    * @en-US The pop-up window of the distribution update window
    * @zh-CN 分布更新窗口的弹窗
@@ -156,12 +156,12 @@ const PeopleList: React.FC = () => {
           }
         }
         toolBarRender={() => [
-          <Button key="3" type="primary">
-            onClick={() => {
-            handleModalVisible(true);
-          }}
+          <Button key="3" type="primary"
+                  onClick={() => {
+                    console.log(3333)
+                    handleModalVisible(true);
+                  }}>
             <PlusOutlined/>
-            New
           </Button>,
         ]}
         request={peoples}
@@ -205,63 +205,10 @@ const PeopleList: React.FC = () => {
           </Button>
         </FooterToolbar>
       )}
-      <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
-        })}
-        width="400px"
-        visible={createModalVisible}
-        onVisibleChange={handleModalVisible}
-        onFinish={async (value) => {
-          const success = await handleAdd(value as API.PeopleListItem);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-      >
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
-            },
-          ]}
-          width="md"
-          name="name"
-        />
-        <ProFormTextArea width="md" name="desc"/>
-      </ModalForm>
-      <UpdateForm
-        onSubmit={async (value) => {
-          const success = await handleUpdate(value);
-          if (success) {
-            handleUpdateModalVisible(false);
-            setCurrentRow(undefined);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          if (!showDetail) {
-            setCurrentRow(undefined);
-          }
-        }}
-        updateModalVisible={updateModalVisible}
-        values={currentRow || {}}
-      />
 
-      <PeopleForm updateModalVisible={!updateModalVisible}/>
+      <PeopleForm updateModalVisible={isModalOpen} close={function () {
+        handleModalVisible(false)
+      }}/>
 
       <Drawer
         width={600}

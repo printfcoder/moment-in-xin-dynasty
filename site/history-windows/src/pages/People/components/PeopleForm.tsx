@@ -8,38 +8,31 @@ import {
   ProFormText, ActionType, ProFormDigit, ProCard,
 } from '@ant-design/pro-components';
 import {Button, Form, message} from 'antd';
-import React, {useRef} from "react";
+import React, {useRef, useState} from "react";
 import {addPeople, peoples, RelationEnum} from "@/services/history/peoples";
 
-export type FormValueType = {
-  target?: string;
-  template?: string;
-  type?: string;
-  time?: string;
-  frequency?: string;
-} & Partial<API.RuleListItem>;
+export type FormValueType = {} & Partial<History.PeopleList>;
 
 export type PeopleFormProps = {
-  onCancel?: (flag?: boolean, formVals?: FormValueType) => void;
-  onSubmit?: (values: FormValueType) => Promise<void>;
-  updateModalVisible: boolean
+  updateModalVisible: boolean;
+  close: () => void;
   values?: Partial<History.People>;
 };
 
 let allPeoples: History.People[];
 
 const PeopleForm: React.FC<PeopleFormProps> = (props) => {
+  const [isModalOpen, handleModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm<{ people: History.People, relationPeoples: History.PeopleRelation[] }>();
   const actionRef = useRef<ActionType>();
-
   return (
     <ModalForm<{
       people: History.People;
       relationPeoples: History.PeopleRelation[];
     }>
+      open={isModalOpen || props.updateModalVisible}
       width={1200}
       layout="horizontal"
-      open={props.updateModalVisible}
       title={props.updateModalVisible ? "修改人物" : "新增人物"}
       trigger={
         <Button type="primary">
@@ -51,18 +44,24 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
       autoFocusFirstInput
       modalProps={{
         destroyOnClose: true,
-        onCancel: () => console.log('run'),
+        onCancel: () => {
+          handleModalVisible(false)
+          props.close()
+        },
       }}
       submitTimeout={2000}
       onFinish={async (formData) => {
-        console.log(formData)
-        const success = await addPeople(formData);
-        if (success) {
-          props.updateModalVisible = false;
+        const ret = await addPeople(formData);
+        if (ret.success) {
           if (actionRef.current) {
             actionRef.current.reload();
           }
+        } else {
+          if (ret.error) {
+            message.error(ret.error.msg);
+          }
         }
+        return true;
       }}
     >
       <ProFormGroup key="people">
