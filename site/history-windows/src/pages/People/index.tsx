@@ -2,18 +2,14 @@ import {addPeople, removePeople, peoples, updatePeople} from '@/services/history
 import type {ActionType, ProColumns, ProDescriptionsItemProps} from '@ant-design/pro-components';
 import {
   FooterToolbar,
-  ModalForm,
   PageContainer,
   ProDescriptions,
-  ProFormText,
-  ProFormTextArea,
   ProTable,
 } from '@ant-design/pro-components';
 import {FormattedMessage, useIntl} from '@umijs/max';
 import {Button, Drawer, message} from 'antd';
 import React, {useRef, useState} from 'react';
 import type {FormValueType} from './components/UpdateForm';
-import UpdateForm from './components/UpdateForm';
 import PeopleForm from './components/PeopleForm';
 import {PlusOutlined} from "@ant-design/icons";
 
@@ -158,7 +154,6 @@ const PeopleList: React.FC = () => {
         toolBarRender={() => [
           <Button key="3" type="primary"
                   onClick={() => {
-                    console.log(3333)
                     handleModalVisible(true);
                   }}>
             <PlusOutlined/>

@@ -5,7 +5,7 @@ import {
   ProFormList,
   ProFormSelect,
   ProFormDependency,
-  ProFormText, ActionType, ProFormDigit, ProCard,
+  ProFormText, ActionType, ProFormDigit,
 } from '@ant-design/pro-components';
 import {Button, Form, message} from 'antd';
 import React, {useRef, useState} from "react";
@@ -23,12 +23,12 @@ let allPeoples: History.People[];
 
 const PeopleForm: React.FC<PeopleFormProps> = (props) => {
   const [isModalOpen, handleModalVisible] = useState<boolean>(false);
-  const [form] = Form.useForm<{ people: History.People, relationPeoples: History.PeopleRelation[] }>();
+  const [form] = Form.useForm<{ people: History.People, relations: History.PeopleRelation[] }>();
   const actionRef = useRef<ActionType>();
   return (
     <ModalForm<{
       people: History.People;
-      relationPeoples: History.PeopleRelation[];
+      relations: History.PeopleRelation[];
     }>
       open={isModalOpen || props.updateModalVisible}
       width={1200}
@@ -50,7 +50,7 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
         },
       }}
       submitTimeout={2000}
-      onFinish={async (formData) => {
+      onFinish={async (formData: History.PeopleRelations) => {
         const ret = await addPeople(formData);
         if (ret.success) {
           if (actionRef.current) {
@@ -60,6 +60,8 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
           if (ret.error) {
             message.error(ret.error.msg);
           }
+
+          return false
         }
         return true;
       }}
@@ -73,9 +75,9 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
         <ProFormText name={["people", "birthDay"]} label="生日" placeholder="请输入生日"/>
         <ProFormText name={["people", "deathDay"]} label="忌日" placeholder="请输入忌日"/>
       </ProFormGroup>
-      <ProFormGroup key="relationPeoples">
+      <ProFormGroup key="relations">
         <ProFormList
-          name={['relationPeoples']}
+          name={['relations']}
           label="关系"
           rules={[
             {

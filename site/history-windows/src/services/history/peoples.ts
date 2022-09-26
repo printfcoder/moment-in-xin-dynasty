@@ -28,9 +28,14 @@ export async function peoples(
 }
 
 /** 新建规则 POST /api/rule */
-export async function addPeople(options?: { [key: string]: any }) {
+export async function addPeople(data: History.PeopleRelations, options?: { [key: string]: any }) {
+  console.log(data)
   return request<Common.HTTPRsp<any>>('/api/history/people-add', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: data,
     ...(options || {}),
   });
 }

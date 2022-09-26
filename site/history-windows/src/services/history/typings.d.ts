@@ -27,6 +27,11 @@ declare namespace History {
     relation: string;
   }
 
+  type PeopleRelations = {
+    people: People;
+    relations: PeopleRelation[];
+  }
+
   type PeopleList = {
     data?: People[];
     /** 列表的内容总数 */
