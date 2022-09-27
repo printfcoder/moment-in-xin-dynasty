@@ -1,62 +1,15 @@
-import {addPeople, removePeople, peoples, updatePeople} from '@/services/history/peoples';
-import type {ActionType, ProColumns, ProDescriptionsItemProps} from '@ant-design/pro-components';
+import {removePeople, listPeople} from '@/services/history/listPeople';
+import type {ActionType, ProColumns} from '@ant-design/pro-components';
 import {
   FooterToolbar,
   PageContainer,
-  ProDescriptions,
   ProTable,
 } from '@ant-design/pro-components';
-import {FormattedMessage, useIntl} from '@umijs/max';
-import {Button, Drawer, message} from 'antd';
+import {FormattedMessage} from '@umijs/max';
+import {Button, message} from 'antd';
 import React, {useRef, useState} from 'react';
-import type {FormValueType} from './components/UpdateForm';
 import PeopleForm from './components/PeopleForm';
-import {PlusOutlined} from "@ant-design/icons";
-
-
-/**
- * @en-US Add node
- * @zh-CN 添加节点
- * @param fields
- */
-const handleAdd = async (fields: API.PeopleListItem) => {
-  const hide = message.loading('正在添加');
-  try {
-    await addPeople({...fields});
-    hide();
-    message.success('Added successfully');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('Adding failed, please try again!');
-    return false;
-  }
-};
-
-/**
- * @en-US Update node
- * @zh-CN 更新节点
- *
- * @param fields
- */
-const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('Configuring');
-  try {
-    await updatePeople({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
-    hide();
-
-    message.success('Configuration is successful');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('Configuration failed, please try again!');
-    return false;
-  }
-};
+import {PlusOutlined, EditOutlined} from "@ant-design/icons";
 
 /**
  *  Delete node
@@ -64,7 +17,7 @@ const handleUpdate = async (fields: FormValueType) => {
  *
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: API.PeopleListItem[]) => {
+const handleRemove = async (selectedRows: History.People[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
@@ -87,25 +40,12 @@ const PeopleList: React.FC = () => {
    * @zh-CN 新建窗口的弹窗
    *  */
   const [isModalOpen, handleModalVisible] = useState<boolean>(false);
-  /**
-   * @en-US The pop-up window of the distribution update window
-   * @zh-CN 分布更新窗口的弹窗
-   * */
-  const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
-
-  const [showDetail, setShowDetail] = useState<boolean>(false);
-
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.PeopleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.PeopleListItem[]>([]);
+  const [selectedRowsState, setSelectedRows] = useState<History.People[]>([]);
 
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
-  const intl = useIntl();
+  let isUpdateModel: boolean = false;
 
-  const columns: ProColumns<API.PeopleListItem>[] = [
+  const columns: ProColumns<History.People>[] = [
     {
       title: <FormattedMessage id="pages.people.id" defaultMessage="id"/>,
       dataIndex: 'id',
@@ -117,7 +57,7 @@ const PeopleList: React.FC = () => {
       title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>,
       dataIndex: 'name',
       sorter: true,
-      hideInSearch: true,
+      hideInSearch: false,
       hideInForm: true,
     },
     {
@@ -138,11 +78,28 @@ const PeopleList: React.FC = () => {
       renderText: (val: string) =>
         `${val}`,
     },
+    {
+      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="操作"/>,
+      dataIndex: 'id',
+      hideInSearch: true,
+      hideInForm: true,
+      renderText: (val: number) => {
+        return <>
+          <Button key={val} type="primary"
+                  onClick={() => {
+                    isUpdateModel = true
+                    handleModalVisible(true);
+                  }}>
+            <EditOutlined/>
+          </Button>
+        </>
+      }
+    },
   ];
 
   return (
     <PageContainer>
-      <ProTable<API.PeopleListItem, API.PageParams>
+      <ProTable<History.People, Common.PageParams>
         actionRef={actionRef}
         rowKey="id"
         showHeader={true}
@@ -154,12 +111,13 @@ const PeopleList: React.FC = () => {
         toolBarRender={() => [
           <Button key="3" type="primary"
                   onClick={() => {
+                    isUpdateModel = false
                     handleModalVisible(true);
                   }}>
             <PlusOutlined/>
           </Button>,
         ]}
-        request={peoples}
+        request={listPeople}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => {
@@ -201,33 +159,11 @@ const PeopleList: React.FC = () => {
         </FooterToolbar>
       )}
 
-      <PeopleForm updateModalVisible={isModalOpen} close={function () {
+      <PeopleForm updateModalVisible={isModalOpen} isUpdateModel={isUpdateModel} close={function () {
         handleModalVisible(false)
+      }} open={function () {
+        handleModalVisible(true)
       }}/>
-
-      <Drawer
-        width={600}
-        visible={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
-      >
-        {currentRow?.name && (
-          <ProDescriptions<API.PeopleListItem>
-            column={2}
-            title={currentRow?.name}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.name,
-            }}
-            columns={columns as ProDescriptionsItemProps<API.PeopleListItem>[]}
-          />
-        )}
-      </Drawer>
     </PageContainer>
   );
 };

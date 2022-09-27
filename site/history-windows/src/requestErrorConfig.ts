@@ -60,8 +60,8 @@ export const errorConfig: RequestConfig = {
     (response) => {
       // 拦截响应数据，进行个性化处理
       const {data} = response as unknown as ResponseStructure<any>;
-      if (!data.error) {
-        message.error('请求失败！');
+      if (!data.success || data.error) {
+        message.error('请求失败！错误' + data.message);
       }
       return response;
     },

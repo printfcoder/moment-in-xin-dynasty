@@ -4,8 +4,8 @@ import {request} from '@umijs/max';
 
 let loadedRelationEnum: any[] = [];
 
-/** 获取规则列表 GET /api/rule */
-export async function peoples(
+/** 获取人物列表 GET */
+export async function listPeople(
   params: {
     /** 名字搜索 */
     name?: string,
@@ -16,7 +16,7 @@ export async function peoples(
   },
   options?: { [key: string]: any },
 ) {
-  return request<Common.HTTPRsp<Common.PageData<History.People>>>('/api/history/peoples', {
+  return request<Common.HTTPRsp<Common.PageData<History.People>>>('/api/history/people/list', {
     method: 'GET',
     params: {
       ...params,
@@ -27,31 +27,47 @@ export async function peoples(
   })
 }
 
-/** 新建规则 POST /api/rule */
-export async function addPeople(data: History.PeopleRelations, options?: { [key: string]: any }) {
-  console.log(data)
-  return request<Common.HTTPRsp<any>>('/api/history/people-add', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+/** 获取人物 */
+export async function getPeople(
+  params: {
+    id: number;
+  },
+  options?: { [key: string]: any },
+) {
+  return request<Common.HTTPRsp<History.PeopleRelations>>('/api/history/people/get', {
+    method: 'GET',
+    params: {
+      ...params,
     },
-    body: data,
     ...(options || {}),
-  });
+  })
 }
 
-/** 新建规则 PUT /api/rule */
-export async function updatePeople(options?: { [key: string]: any }) {
-  return request<API.RuleListItem>('/api/history/people-update', {
+/** 新建人物 */
+export async function addPeople(data: History.PeopleRelations, options?: { [key: string]: any }) {
+  return request<Common.HTTPRsp<any>>('/api/history/people/add', {
     method: 'POST',
+    data: data,
     ...(options || {}),
   });
 }
 
-/** 删除规则 DELETE /api/rule */
-export async function removePeople(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/rule', {
-    method: 'DELETE',
+/** 更新人物 */
+export async function updatePeople(data: History.PeopleRelations, options?: { [key: string]: any }) {
+  return request<Common.HTTPRsp<any>>('/api/history/people/update', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+}
+
+/** 删除人物 */
+export async function removePeople(params: {
+  id: number;
+}, options?: { [key: string]: any }) {
+  return request<Common.HTTPRsp<any>>('/api/history/people/remove', {
+    method: 'POST',
+    data: params,
     ...(options || {}),
   });
 }

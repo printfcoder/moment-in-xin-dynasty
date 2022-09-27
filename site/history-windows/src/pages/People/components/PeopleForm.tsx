@@ -1,76 +1,112 @@
-import {PlusOutlined} from '@ant-design/icons';
 import {
   ModalForm,
   ProFormGroup,
   ProFormList,
   ProFormSelect,
   ProFormDependency,
-  ProFormText, ActionType, ProFormDigit,
+  ProFormText, ProFormDigit,
 } from '@ant-design/pro-components';
-import {Button, Form, message} from 'antd';
-import React, {useRef, useState} from "react";
-import {addPeople, peoples, RelationEnum} from "@/services/history/peoples";
+import {Form, message} from 'antd';
+import React from "react";
+import {addPeople, getPeople, listPeople, RelationEnum, updatePeople} from "@/services/history/listPeople";
 
-export type FormValueType = {} & Partial<History.PeopleList>;
 
 export type PeopleFormProps = {
   updateModalVisible: boolean;
+  isUpdateModel: boolean;
+  peopleId: number;
   close: () => void;
+  open: () => void;
   values?: Partial<History.People>;
 };
 
 let allPeoples: History.People[];
 
+const handleAdd = async (formData: History.PeopleRelations) => {
+  const ret = await addPeople(formData);
+  if (ret.success) {
+    console.log(ret)
+  } else {
+    if (ret.error) {
+      message.error(ret.error.msg);
+    }
+    return false
+  }
+  return true;
+};
+
+const handleUpdate = async (formData: History.PeopleRelations) => {
+  const ret = await updatePeople(formData);
+  if (ret.success) {
+    console.log(ret)
+  } else {
+    if (ret.error) {
+      message.error(ret.error.msg);
+    }
+    return false
+  }
+  return true;
+};
+
+const handleGet = async (id: number) => {
+  const ret = await getPeople({id: id});
+  if (ret.success) {
+    console.log(ret)
+  } else {
+    if (ret.error) {
+      message.error(ret.error.msg);
+    }
+    return null
+  }
+  return ret.data;
+};
+
 const PeopleForm: React.FC<PeopleFormProps> = (props) => {
-  const [isModalOpen, handleModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm<{ people: History.People, relations: History.PeopleRelation[] }>();
-  const actionRef = useRef<ActionType>();
   return (
     <ModalForm<{
       people: History.People;
       relations: History.PeopleRelation[];
     }>
-      open={isModalOpen || props.updateModalVisible}
+      open={props.updateModalVisible}
       width={1200}
       layout="horizontal"
-      title={props.updateModalVisible ? "修改人物" : "新增人物"}
-      trigger={
-        <Button type="primary">
-          <PlusOutlined/>
-          新建表单
-        </Button>
-      }
+      onInit={function () {
+        if (props.peopleId != null) {
+          const pr = handleGet(props.peopleId)
+          if (pr != null) {
+            form.people = pr.people
+            form.relations = pr.relations
+          }
+        }
+      }}
+      title={props.isUpdateModel ? "修改人物" : "新增人物"}
       form={form}
       autoFocusFirstInput
       modalProps={{
         destroyOnClose: true,
         onCancel: () => {
-          handleModalVisible(false)
           props.close()
         },
       }}
       submitTimeout={2000}
-      onFinish={async (formData: History.PeopleRelations) => {
-        const ret = await addPeople(formData);
-        if (ret.success) {
-          if (actionRef.current) {
-            actionRef.current.reload();
-          }
-        } else {
-          if (ret.error) {
-            message.error(ret.error.msg);
-          }
-
-          return false
-        }
-        return true;
-      }}
+      onFinish={props.isUpdateModel ? handleAdd : handleUpdate}
     >
       <ProFormGroup key="people">
         <ProFormText
           name={["people", "name"]}
           width={120}
           label="姓名"
+          rules={[
+            {
+              validator: async (_, value) => {
+                if (value && value.length > 0) {
+                  return;
+                }
+                throw new Error('请填写人物');
+              },
+            },
+          ]}
         />
         <ProFormText name={["people", "birthDay"]} label="生日" placeholder="请输入生日"/>
         <ProFormText name={["people", "deathDay"]} label="忌日" placeholder="请输入忌日"/>
@@ -79,27 +115,16 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
         <ProFormList
           name={['relations']}
           label="关系"
-          rules={[
-            {
-              validator: async (_, value) => {
-                console.log(value);
-                if (value && value.length > 0) {
-                  return;
-                }
-                throw new Error('至少要有一项！');
-              },
-            },
-          ]}
         >
           <ProFormGroup key="group">
             <ProFormSelect
-              name="relationPeople"
+              name="peopleIDB"
               label=""
               showSearch={true}
               request={async ({keyWords}) => {  // request使用params传入的参数，每次都触发了
                 const arr: any = [];
                 if (allPeoples == null) {
-                  const res = await peoples({name: keyWords});
+                  const res = await listPeople({name: keyWords});
                   if (res) {
                     allPeoples = res.data
                   }
@@ -113,16 +138,26 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
 
                 return arr;
               }}
+              rules={[
+                {
+                  validator: async (_, value) => {
+                    if (value != null) {
+                      return;
+                    }
+                    throw new Error('请选择人物！');
+                  },
+                },
+              ]}
             />
 
-            <ProFormDependency name={['relationPeople']}>
-              {({relationPeople}) => {
-                if (relationPeople != null) {
+            <ProFormDependency name={['peopleIDB']}>
+              {({peopleIDB}) => {
+                if (peopleIDB != null) {
                   let birth2deathDay: string = ""
                   let people: History.People;
                   if (allPeoples != null) {
                     allPeoples.some((v) => {
-                      if (v.id == relationPeople) {
+                      if (v.id == peopleIDB) {
                         people = v
                         return true
                       }
@@ -153,6 +188,16 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
               showSearch={true}
               dependencies={['name']}
               request={RelationEnum}
+              rules={[
+                {
+                  validator: async (_, value) => {
+                    if (value != null) {
+                      return;
+                    }
+                    throw new Error('请选择关系！');
+                  },
+                },
+              ]}
             />
             <ProFormDigit name="relationIdx" min={1} label="顺位"/>
             <ProFormText name="relationBegin" label="始"/>

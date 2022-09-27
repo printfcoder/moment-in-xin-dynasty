@@ -2,11 +2,6 @@
 /* eslint-disable */
 
 declare namespace History {
-  type PageParams = {
-    current?: number;
-    pageSize?: number;
-  };
-
   type People = {
     key?: number;
     id: number;
@@ -23,8 +18,11 @@ declare namespace History {
 
   type PeopleRelation = {
     key?: number;
-    peopleId: number;
+    peopleIDB: number;
     relation: string;
+    relationIdx: number;
+    relationBegin:  string;
+    relationEnd:  string;
   }
 
   type PeopleRelations = {

@@ -1,6 +1,6 @@
 declare namespace Common {
   type PageParams = {
-    current?: number;
+    pageNo?: number;
     pageSize?: number;
   };
 
