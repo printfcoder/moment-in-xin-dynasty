@@ -27,6 +27,8 @@ type PageData struct {
 }
 
 func NewError(err Error, oriMsg error) *Error {
-	err.OriMsg = oriMsg.Error()
+	if oriMsg != nil {
+		err.OriMsg = oriMsg.Error()
+	}
 	return &err
 }

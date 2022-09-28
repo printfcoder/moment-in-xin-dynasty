@@ -10,6 +10,7 @@ var (
 	ErrorDBBeginTx       = Error{No: "100005", Msg: "事务启动失败"}
 	ErrorDBInsert        = Error{No: "100006", Msg: "DB插入失败"}
 	ErrorDBCommit        = Error{No: "100007", Msg: "事务提交失败"}
+	ErrorDBNoSuchRecord  = Error{No: "100008", Msg: "数据库记录不存在"}
 
 	/** People业务区 */
 
@@ -18,4 +19,6 @@ var (
 	ErrorPeopleInvalidDeathDay         = Error{No: "110003", Msg: "忌日非法"}
 	ErrorPeopleInvalidRelationPeopleID = Error{No: "110004", Msg: "关联人物id不正确"}
 	ErrorPeopleInvalidRelation         = Error{No: "110005", Msg: "关联人物的关系"}
+	ErrorPeopleInvalidID               = Error{No: "110006", Msg: "id非法"}
+	ErrorPeopleIsNobody                = Error{No: "110007", Msg: "人物不存在"}
 )

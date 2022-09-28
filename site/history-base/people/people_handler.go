@@ -14,18 +14,45 @@ import (
 func Handlers() []web.HandlerFunc {
 	return []web.HandlerFunc{
 		{
-			"peoples",
+			"people/list",
 			ListHandler,
 		},
 		{
-			"relation-enum",
+			"people/get",
+			GetHandler,
+		},
+		{
+			"people/relation-enum",
 			RelationEnum,
 		},
 		{
-			"people-add",
+			"people/add",
 			AddHandler,
 		},
+		{
+			"/people/update",
+			UpdateHandler,
+		},
 	}
+}
+
+func GetHandler(w http.ResponseWriter, r *http.Request) {
+	rsp := &common.HTTPRsp{}
+	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	if id == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidID, nil))
+		return
+	}
+
+	people, err := get(id)
+	if err != nil {
+		writeFailHTTP(w, rsp, err)
+		return
+	}
+
+	rsp.Data = people
+
+	writeSuccessHTTP(w, rsp)
 }
 
 func ListHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +66,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 		pageSize = 10
 	}
 
-	peoples, count, err := List(pageNo, pageSize)
+	peoples, count, err := list(pageNo, pageSize)
 	if err != nil {
 		writeFailHTTP(w, rsp, err)
 		return
@@ -59,6 +86,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&pr)
 	if err != nil {
+		log.Errorf("decode body err: %s", err)
 		writeFailHTTP(w, rsp, common.NewError(common.ErrorInvalidJSONBody, err))
 		return
 	}
@@ -78,7 +106,46 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = Add(pr)
+	err = add(pr)
+	if err != nil {
+		writeFailHTTP(w, rsp, err)
+		return
+	}
+	writeSuccessHTTP(w, rsp)
+}
+
+func UpdateHandler(w http.ResponseWriter, r *http.Request) {
+	var pr PeopleRelation
+	rsp := &common.HTTPRsp{}
+
+	err := json.NewDecoder(r.Body).Decode(&pr)
+	if err != nil {
+		log.Errorf("decode body err: %s", err)
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorInvalidJSONBody, err))
+		return
+	}
+
+	if pr.People.ID == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidName, err))
+		return
+	}
+
+	if len(pr.People.Name) == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidName, err))
+		return
+	}
+
+	if len(pr.People.BirthDay) == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidBirthDay, err))
+		return
+	}
+
+	if len(pr.People.DeathDay) == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidDeathDay, err))
+		return
+	}
+
+	err = update(pr)
 	if err != nil {
 		writeFailHTTP(w, rsp, err)
 		return

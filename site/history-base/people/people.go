@@ -10,12 +10,12 @@ type People struct {
 }
 
 type Relation struct {
-	PeopleIDA     uint   `json:"peopleIDA,omitempty"`
-	PeopleIDB     uint   `json:"peopleIDB,omitempty"`
-	Relation      string `json:"relation,omitempty"`
-	RelationIdx   uint   `json:"relationIdx,omitempty"`
-	RelationBegin string `json:"relationBegin,omitempty"`
-	RelationEnd   string `json:"relationEnd,omitempty"`
+	PeopleIDA     uint    `json:"peopleIDA,omitempty"`
+	PeopleIDB     uint    `json:"peopleIDB,omitempty"`
+	Relation      string  `json:"relation,omitempty"`
+	RelationIdx   *uint   `json:"relationIdx,omitempty"`
+	RelationBegin *string `json:"relationBegin,omitempty"`
+	RelationEnd   *string `json:"relationEnd,omitempty"`
 }
 
 type PeopleRelation struct {
