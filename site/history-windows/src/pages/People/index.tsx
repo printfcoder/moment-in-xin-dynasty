@@ -21,9 +21,7 @@ const handleRemove = async (selectedRows: History.People[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await removePeople({
-      key: selectedRows.map((row) => row.key),
-    });
+    await removePeople({id: selectedRows[0].id});
     hide();
     message.success('Deleted successfully and will refresh soon');
     return true;
@@ -34,16 +32,24 @@ const handleRemove = async (selectedRows: History.People[]) => {
   }
 };
 
+export type modelState = {
+  isModalOpen: boolean;
+  isUpdateModel: boolean;
+  currentPeopleId: number;
+};
+
 const PeopleList: React.FC = () => {
   /**
    * @en-US Pop-up window of new window
    * @zh-CN 新建窗口的弹窗
    *  */
-  const [isModalOpen, handleModalVisible] = useState<boolean>(false);
+  const [modelState, handleModalVisible] = useState<modelState>({
+    currentPeopleId: 0,
+    isUpdateModel: false,
+    isModalOpen: false
+  });
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<History.People[]>([]);
-
-  let isUpdateModel: boolean = false;
 
   const columns: ProColumns<History.People>[] = [
     {
@@ -87,8 +93,11 @@ const PeopleList: React.FC = () => {
         return <>
           <Button key={val} type="primary"
                   onClick={() => {
-                    isUpdateModel = true
-                    handleModalVisible(true);
+                    handleModalVisible({
+                      currentPeopleId: val,
+                      isUpdateModel: true,
+                      isModalOpen: true
+                    });
                   }}>
             <EditOutlined/>
           </Button>
@@ -111,8 +120,11 @@ const PeopleList: React.FC = () => {
         toolBarRender={() => [
           <Button key="3" type="primary"
                   onClick={() => {
-                    isUpdateModel = false
-                    handleModalVisible(true);
+                    handleModalVisible({
+                      currentPeopleId: 0,
+                      isUpdateModel: false,
+                      isModalOpen: true
+                    });
                   }}>
             <PlusOutlined/>
           </Button>,
@@ -159,11 +171,23 @@ const PeopleList: React.FC = () => {
         </FooterToolbar>
       )}
 
-      <PeopleForm updateModalVisible={isModalOpen} isUpdateModel={isUpdateModel} close={function () {
-        handleModalVisible(false)
-      }} open={function () {
-        handleModalVisible(true)
-      }}/>
+      <PeopleForm updateModalVisible={modelState.isModalOpen}
+                  peopleId={modelState.currentPeopleId}
+                  isUpdateModel={modelState.isUpdateModel}
+                  close={() => {
+                    handleModalVisible({
+                      currentPeopleId: 0,
+                      isModalOpen: false,
+                      isUpdateModel: false
+                    })
+                  }}
+                  open={() => {
+                    handleModalVisible({
+                      currentPeopleId: 0,
+                      isModalOpen: true,
+                      isUpdateModel: false
+                    })
+                  }}/>
     </PageContainer>
   );
 };

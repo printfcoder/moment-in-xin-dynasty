@@ -57,16 +57,18 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 
 func ListHandler(w http.ResponseWriter, r *http.Request) {
 	rsp := &common.HTTPRsp{}
-	pageNo, _ := strconv.Atoi(r.URL.Query().Get("pageNo"))
-	if pageNo < 1 {
-		pageNo = 1
+	current, _ := strconv.Atoi(r.URL.Query().Get("current"))
+	if current < 1 {
+		current = 1
 	}
 	pageSize, _ := strconv.Atoi(r.URL.Query().Get("pageSize"))
 	if pageSize < 1 {
 		pageSize = 10
 	}
 
-	peoples, count, err := list(pageNo, pageSize)
+	name := r.URL.Query().Get("name")
+
+	peoples, count, err := list(name, current, pageSize)
 	if err != nil {
 		writeFailHTTP(w, rsp, err)
 		return

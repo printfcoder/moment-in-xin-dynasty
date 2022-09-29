@@ -9,8 +9,13 @@ import (
 	log "github.com/stack-labs/stack/logger"
 )
 
-func list(pageNo, pageSize int) (peoples []*People, count int, err error) {
-	row := db.DB().QueryRow("SELECT COUNT(1) FROM people")
+func list(name string, current, pageSize int) (peoples []*People, count int, err error) {
+	whereSQL := " WHERE 1=1 "
+	if name != "" {
+		whereSQL += "AND name LIKE '%" + name + "%'"
+	}
+
+	row := db.DB().QueryRow("SELECT COUNT(1) FROM people" + whereSQL)
 	if row.Err() != nil {
 		return nil, 0, common.NewError(common.ErrorDBQueryTotal, row.Err())
 	}
@@ -18,7 +23,7 @@ func list(pageNo, pageSize int) (peoples []*People, count int, err error) {
 	_ = row.Scan(&count)
 
 	var rows *sql.Rows
-	rows, err = db.DB().Query("SELECT id, name, birthday, deathday FROM people ORDER BY id LIMIT ?, ?", (pageNo-1)*pageSize, pageSize)
+	rows, err = db.DB().Query("SELECT id, name, birthday, deathday FROM people "+whereSQL+" ORDER BY id LIMIT ?, ?", (current-1)*pageSize, pageSize)
 	if err != nil {
 		return nil, 0, common.NewError(common.ErrorDBQuery, err)
 	}

@@ -10,7 +10,7 @@ export async function listPeople(
     /** 名字搜索 */
     name?: string,
     /** 当前的页码 */
-    pageNo?: number;
+    current?: number;
     /** 页面的容量 */
     pageSize?: number;
   },
@@ -77,7 +77,7 @@ export async function RelationEnum(options?: { [key: string]: any }) {
   if (loadedRelationEnum.length > 0) {
     return loadedRelationEnum
   }
-  return request<Common.HTTPRsp<String[]>>('/api/history/relation-enum', {
+  return request<Common.HTTPRsp<String[]>>('/api/history/people/relation-enum', {
     method: 'GET',
     ...(options || {}),
   }).then((rsp: Common.HTTPRsp<String[]>) => {

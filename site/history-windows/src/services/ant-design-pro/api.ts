@@ -90,7 +90,7 @@ export async function people(
   params: {
     // query
     /** 当前的页码 */
-    pageNo?: number;
+    current?: number;
     /** 页面的容量 */
     pageSize?: number;
   },

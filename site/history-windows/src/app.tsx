@@ -28,7 +28,7 @@ export async function getInitialState(): Promise<{
       });
       return msg.data;*/
       return {
-        name: "demo",
+        name: "今日读史",
       }
     } catch (error) {
       history.push(loginPath);

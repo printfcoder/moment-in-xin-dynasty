@@ -56,7 +56,7 @@ declare namespace API {
   }
 
   type PageData<T> = {
-    pageNo?: int;
+    current?: int;
     pageSize?: int;
     total?: int;
     list?: T[];

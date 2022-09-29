@@ -1,6 +1,6 @@
 declare namespace Common {
   type PageParams = {
-    pageNo?: number;
+    current?: number;
     pageSize?: number;
   };
 
@@ -18,7 +18,7 @@ declare namespace Common {
   }
 
   type PageData<T> = {
-    pageNo?: int;
+    current?: int;
     pageSize?: int;
     total?: int;
     list?: T[];

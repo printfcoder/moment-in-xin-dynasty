@@ -20,7 +20,7 @@ func (e Error) Error() string {
 }
 
 type PageData struct {
-	PageNo   int         `json:"pageNo,omitempty"`
+	Current  int         `json:"current,omitempty"`
 	PageSize int         `json:"pageSize,omitempty"`
 	Total    int         `json:"total,omitempty"`
 	List     interface{} `json:"list,omitempty"`

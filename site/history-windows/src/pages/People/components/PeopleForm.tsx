@@ -72,13 +72,21 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
       width={1200}
       layout="horizontal"
       onInit={function () {
-        if (props.peopleId != null) {
-          const pr = handleGet(props.peopleId)
-          if (pr != null) {
-            form.people = pr.people
-            form.relations = pr.relations
-          }
+        if (props.peopleId > 0) {
+          handleGet(props.peopleId).then(function (data) {
+            if (data != null) {
+              form.setFieldsValue({
+                people: data.people,
+                relations: data.relations,
+              })
+            }
+          })
         }
+
+        listPeople({pageSize: 100000}).then((res) => {
+          console.log(1)
+          allPeoples = res.data
+        });
       }}
       title={props.isUpdateModel ? "修改人物" : "新增人物"}
       form={form}
@@ -90,9 +98,27 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
         },
       }}
       submitTimeout={2000}
-      onFinish={props.isUpdateModel ? handleAdd : handleUpdate}
+      onFinish={(formData) => {
+        if (props.isUpdateModel) {
+          return handleUpdate(formData).then(() => {
+            props.close()
+          })
+        } else {
+          return handleAdd(formData).then(() => {
+            props.close()
+          })
+        }
+      }}
     >
-      <ProFormGroup key="people">
+      <
+        ProFormGroup
+        key="people">
+        < ProFormText
+          name={["people", "id"
+          ]
+          }
+          hidden={true}
+        />
         <ProFormText
           name={["people", "name"]}
           width={120}
@@ -121,15 +147,10 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
               name="peopleIDB"
               label=""
               showSearch={true}
-              request={async ({keyWords}) => {  // request使用params传入的参数，每次都触发了
+              request={async ({}) => {  // request使用params传入的参数，每次都触发了
                 const arr: any = [];
-                if (allPeoples == null) {
-                  const res = await listPeople({name: keyWords});
-                  if (res) {
-                    allPeoples = res.data
-                  }
-                }
-                allPeoples && allPeoples.forEach(v => {
+                console.log(2)
+                allPeoples.forEach(v => {
                   arr.push({
                     label: v.name,
                     value: v.id,
@@ -171,7 +192,6 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
                     }
                     birth2deathDay = people.birthDay + "-" + people.deathDay
                   }
-
                   return <>
                     <ProFormText bordered={false} label={"识别"}>
                       {people && people.id}: {birth2deathDay}
@@ -206,7 +226,8 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
         </ProFormList>
       </ProFormGroup>
     </ModalForm>
-  );
+  )
+    ;
 };
 
 export default PeopleForm;
