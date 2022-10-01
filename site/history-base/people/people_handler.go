@@ -30,6 +30,10 @@ func Handlers() []web.HandlerFunc {
 			AddHandler,
 		},
 		{
+			"people/delete",
+			DelHandler,
+		},
+		{
 			"/people/update",
 			UpdateHandler,
 		},
@@ -51,6 +55,23 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rsp.Data = people
+
+	writeSuccessHTTP(w, rsp)
+}
+
+func DelHandler(w http.ResponseWriter, r *http.Request) {
+	rsp := &common.HTTPRsp{}
+	id, _ := strconv.Atoi(r.Form.Get("id"))
+	if id == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidID, nil))
+		return
+	}
+
+	err := del(id)
+	if err != nil {
+		writeFailHTTP(w, rsp, err)
+		return
+	}
 
 	writeSuccessHTTP(w, rsp)
 }

@@ -11,6 +11,7 @@ var (
 	ErrorDBInsert        = Error{No: "100006", Msg: "DB插入失败"}
 	ErrorDBCommit        = Error{No: "100007", Msg: "事务提交失败"}
 	ErrorDBNoSuchRecord  = Error{No: "100008", Msg: "数据库记录不存在"}
+	ErrorDBDelete        = Error{No: "100009", Msg: "数据库删除失败"}
 
 	/** People业务区 */
 

@@ -41,6 +41,22 @@ func list(name string, current, pageSize int) (peoples []*People, count int, err
 	return peoples, count, nil
 }
 
+func del(id int) (err error) {
+	_, err = db.DB().Exec("DELETE FROM people WHERE id = ?", id)
+	if err != nil {
+		err = fmt.Errorf("delete people err: %s", err)
+		return common.NewError(common.ErrorDBDelete, err)
+	}
+
+	_, err = db.DB().Exec("DELETE FROM people_relation WHERE people_id_a = ?", id)
+	if err != nil {
+		err = fmt.Errorf("delete people relation err: %s", err)
+		return common.NewError(common.ErrorDBDelete, err)
+	}
+
+	return
+}
+
 func get(id int) (pr *PeopleRelation, err error) {
 	row := db.DB().QueryRow("SELECT id, name, birthday, deathday FROM people WHERE id = ?", id)
 	if row.Err() != nil {

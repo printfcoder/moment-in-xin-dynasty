@@ -6,14 +6,26 @@ import {
   ProFormDependency,
   ProFormText, ProFormDigit,
 } from '@ant-design/pro-components';
-import {Form, message} from 'antd';
+import {Alert, Form, message} from 'antd';
 import React from "react";
-import {addPeople, getPeople, listPeople, RelationEnum, updatePeople} from "@/services/history/listPeople";
+import {
+  addPeople,
+  getPeople,
+  listPeople,
+  RelationEnum,
+  deletePeople,
+  updatePeople
+} from "@/services/history/listPeople";
 
+export enum modelType {
+  UPDATE = 0,
+  DELETE = 1,
+  ADD = 2
+}
 
 export type PeopleFormProps = {
   updateModalVisible: boolean;
-  isUpdateModel: boolean;
+  modelType: modelType;
   peopleId: number;
   close: () => void;
   open: () => void;
@@ -34,6 +46,21 @@ const handleAdd = async (formData: History.PeopleRelations) => {
   }
   return true;
 };
+
+const handleDelete = async (id: number) => {
+  // 再次确认
+  const ret = await deletePeople({id: id});
+  if (ret.success) {
+    message.success("删除成功");
+  } else {
+    if (ret.error) {
+      message.error(ret.error.msg);
+    }
+    return false
+  }
+  return true;
+};
+
 
 const handleUpdate = async (formData: History.PeopleRelations) => {
   const ret = await updatePeople(formData);
@@ -61,6 +88,18 @@ const handleGet = async (id: number) => {
   return ret.data;
 };
 
+const parseTitle = function (tp: modelType) {
+  if (tp == modelType.ADD) {
+    return "新增人物"
+  }
+
+  if (tp == modelType.UPDATE) {
+    return "修改人物"
+  }
+
+  return "删除人物（以下人物和关系将被删除）"
+}
+
 const PeopleForm: React.FC<PeopleFormProps> = (props) => {
   const [form] = Form.useForm<{ people: History.People, relations: History.PeopleRelation[] }>();
   return (
@@ -84,11 +123,10 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
         }
 
         listPeople({pageSize: 100000}).then((res) => {
-          console.log(1)
           allPeoples = res.data
         });
       }}
-      title={props.isUpdateModel ? "修改人物" : "新增人物"}
+      title={parseTitle(props.modelType)}
       form={form}
       autoFocusFirstInput
       modalProps={{
@@ -99,14 +137,22 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
       }}
       submitTimeout={2000}
       onFinish={(formData) => {
-        if (props.isUpdateModel) {
-          return handleUpdate(formData).then(() => {
-            props.close()
-          })
-        } else {
-          return handleAdd(formData).then(() => {
-            props.close()
-          })
+        switch (props.modelType) {
+          case modelType.UPDATE:
+            handleUpdate(formData).then(() => {
+              props.close()
+            })
+            break
+          case modelType.ADD:
+            handleAdd(formData).then(() => {
+              props.close()
+            })
+            break
+          case modelType.DELETE:
+            handleDelete(formData.people.id).then(() => {
+              props.close()
+            })
+            break
         }
       }}
     >

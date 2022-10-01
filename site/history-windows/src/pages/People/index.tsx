@@ -1,4 +1,4 @@
-import {removePeople, listPeople} from '@/services/history/listPeople';
+import {deletePeople, listPeople} from '@/services/history/listPeople';
 import type {ActionType, ProColumns} from '@ant-design/pro-components';
 import {
   FooterToolbar,
@@ -6,10 +6,10 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import {FormattedMessage} from '@umijs/max';
-import {Button, message} from 'antd';
+import {Button, message, Popconfirm} from 'antd';
 import React, {useRef, useState} from 'react';
-import PeopleForm from './components/PeopleForm';
-import {PlusOutlined, EditOutlined} from "@ant-design/icons";
+import PeopleForm, {modelType} from './components/PeopleForm';
+import {PlusOutlined, EditOutlined, DeleteOutlined, QuestionCircleOutlined} from "@ant-design/icons";
 
 /**
  *  Delete node
@@ -21,7 +21,7 @@ const handleRemove = async (selectedRows: History.People[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await removePeople({id: selectedRows[0].id});
+    await deletePeople({id: selectedRows[0].id});
     hide();
     message.success('Deleted successfully and will refresh soon');
     return true;
@@ -32,10 +32,11 @@ const handleRemove = async (selectedRows: History.People[]) => {
   }
 };
 
+
 export type modelState = {
-  isModalOpen: boolean;
-  isUpdateModel: boolean;
+  modelType: modelType;
   currentPeopleId: number;
+  isModalOpen: boolean;
 };
 
 const PeopleList: React.FC = () => {
@@ -45,7 +46,7 @@ const PeopleList: React.FC = () => {
    *  */
   const [modelState, handleModalVisible] = useState<modelState>({
     currentPeopleId: 0,
-    isUpdateModel: false,
+    modelType: modelType.ADD,
     isModalOpen: false
   });
   const actionRef = useRef<ActionType>();
@@ -95,12 +96,22 @@ const PeopleList: React.FC = () => {
                   onClick={() => {
                     handleModalVisible({
                       currentPeopleId: val,
-                      isUpdateModel: true,
+                      modelType: modelType.UPDATE,
                       isModalOpen: true
                     });
                   }}>
             <EditOutlined/>
           </Button>
+          <Popconfirm title="确认删除？" onConfirm={() => {
+            handleModalVisible({
+              currentPeopleId: val,
+              modelType: modelType.DELETE,
+              isModalOpen: true
+            });
+          }
+          } icon={<QuestionCircleOutlined style={{color: 'red'}}/>}>
+            <a href="#">删除</a>
+          </Popconfirm>
         </>
       }
     },
@@ -122,7 +133,7 @@ const PeopleList: React.FC = () => {
                   onClick={() => {
                     handleModalVisible({
                       currentPeopleId: 0,
-                      isUpdateModel: false,
+                      modelType: modelType.ADD,
                       isModalOpen: true
                     });
                   }}>
@@ -173,19 +184,19 @@ const PeopleList: React.FC = () => {
 
       <PeopleForm updateModalVisible={modelState.isModalOpen}
                   peopleId={modelState.currentPeopleId}
-                  isUpdateModel={modelState.isUpdateModel}
+                  modelType={modelState.modelType}
                   close={() => {
                     handleModalVisible({
                       currentPeopleId: 0,
                       isModalOpen: false,
-                      isUpdateModel: false
+                      modelType: modelType.ADD,
                     })
                   }}
                   open={() => {
                     handleModalVisible({
                       currentPeopleId: 0,
                       isModalOpen: true,
-                      isUpdateModel: false
+                      modelType: modelType.ADD,
                     })
                   }}/>
     </PageContainer>

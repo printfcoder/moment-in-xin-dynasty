@@ -62,7 +62,7 @@ export async function updatePeople(data: History.PeopleRelations, options?: { [k
 }
 
 /** 删除人物 */
-export async function removePeople(params: {
+export async function deletePeople(params: {
   id: number;
 }, options?: { [key: string]: any }) {
   return request<Common.HTTPRsp<any>>('/api/history/people/remove', {
