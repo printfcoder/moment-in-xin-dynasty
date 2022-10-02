@@ -61,13 +61,22 @@ func GetHandler(w http.ResponseWriter, r *http.Request) {
 
 func DelHandler(w http.ResponseWriter, r *http.Request) {
 	rsp := &common.HTTPRsp{}
-	id, _ := strconv.Atoi(r.Form.Get("id"))
-	if id == 0 {
+	body := struct {
+		ID int `json:"id,omitempty"`
+	}{}
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		log.Errorf("decode body err: %s", err)
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorInvalidJSONBody, err))
+		return
+	}
+
+	if body.ID == 0 {
 		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidID, nil))
 		return
 	}
 
-	err := del(id)
+	err = del(body.ID)
 	if err != nil {
 		writeFailHTTP(w, rsp, err)
 		return

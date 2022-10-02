@@ -65,7 +65,7 @@ export async function updatePeople(data: History.PeopleRelations, options?: { [k
 export async function deletePeople(params: {
   id: number;
 }, options?: { [key: string]: any }) {
-  return request<Common.HTTPRsp<any>>('/api/history/people/remove', {
+  return request<Common.HTTPRsp<any>>('/api/history/people/delete', {
     method: 'POST',
     data: params,
     ...(options || {}),

@@ -12,6 +12,7 @@ var (
 	ErrorDBCommit        = Error{No: "100007", Msg: "事务提交失败"}
 	ErrorDBNoSuchRecord  = Error{No: "100008", Msg: "数据库记录不存在"}
 	ErrorDBDelete        = Error{No: "100009", Msg: "数据库删除失败"}
+	ErrorParseBody       = Error{No: "100010", Msg: "参数解析失败"}
 
 	/** People业务区 */
 
