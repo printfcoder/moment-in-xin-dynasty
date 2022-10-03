@@ -29,7 +29,10 @@ func main() {
 			handlers()...,
 		),
 	)
-	s.Run()
+	err := s.Run()
+	if err != nil {
+		panic(err)
+	}
 }
 
 func HelloWorld() web.HandlerFunc {
