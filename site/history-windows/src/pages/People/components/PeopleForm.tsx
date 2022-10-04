@@ -265,7 +265,7 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
                 },
               ]}
             />
-            <ProFormDigit name="relationIdx" min={1} label="顺位"/>
+            <ProFormDigit name="relationIdx" width={"sm"} min={1} label="顺位"/>
             <ProFormText name="relationBegin" label="始"/>
             <ProFormText name="relationEnd" label="终"/>
           </ProFormGroup>

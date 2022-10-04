@@ -9,7 +9,7 @@ import {FormattedMessage} from '@umijs/max';
 import {Button, message, Popconfirm} from 'antd';
 import React, {useRef, useState} from 'react';
 import PeopleForm, {modelType} from './components/PeopleForm';
-import {PlusOutlined, EditOutlined, DeleteOutlined, QuestionCircleOutlined} from "@ant-design/icons";
+import {PlusOutlined, QuestionCircleOutlined} from "@ant-design/icons";
 
 /**
  *  Delete node
@@ -37,6 +37,58 @@ export type modelState = {
   modelType: modelType;
   currentPeopleId: number;
   isModalOpen: boolean;
+};
+
+const expandedRowRender = () => {
+  const data = [];
+  for (let i = 0; i < 3; i += 1) {
+    data.push({
+      key: i,
+      date: '2014-12-24 23:12:00',
+      name: 'This is production name',
+      upgradeNum: 'Upgraded: 56',
+    });
+  }
+  return (
+    <ProTable
+      columns={[
+        {title: 'id', dataIndex: 'date', key: 'date'},
+        {title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>, dataIndex: 'name', key: 'name'},
+        {
+          title: <FormattedMessage id="pages.people.relation" defaultMessage="关系"/>,
+          dataIndex: 'upgradeNum',
+          key: 'upgradeNum'
+        },
+        {
+          title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
+          dataIndex: 'upgradeNum',
+          key: 'upgradeNum'
+        },
+        {
+          title: <FormattedMessage id="pages.people.relationStart" defaultMessage="始"/>,
+          dataIndex: 'upgradeNum',
+          key: 'upgradeNum'
+        },
+        {
+          title: <FormattedMessage id="pages.people.relationEnd" defaultMessage="终"/>,
+          dataIndex: 'upgradeNum',
+          key: 'upgradeNum'
+        },
+        {
+          title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="操作"/>,
+          dataIndex: 'operation',
+          key: 'operation',
+          valueType: 'option',
+          render: () => [<a key="Pause">Pause</a>, <a key="Stop">Stop</a>],
+        },
+      ]}
+      headerTitle={false}
+      search={false}
+      options={false}
+      dataSource={data}
+      pagination={false}
+    />
+  );
 };
 
 const PeopleList: React.FC = () => {
@@ -92,7 +144,7 @@ const PeopleList: React.FC = () => {
       hideInForm: true,
       renderText: (val: number) => {
         return <>
-          <Button key={val} type="primary"
+          <Button key={val} type="text"
                   onClick={() => {
                     handleModalVisible({
                       currentPeopleId: val,
@@ -100,7 +152,7 @@ const PeopleList: React.FC = () => {
                       isModalOpen: true
                     });
                   }}>
-            <EditOutlined/>
+            修改
           </Button>
           <Popconfirm title="确认删除？" onConfirm={() => {
             handleModalVisible({
@@ -116,6 +168,7 @@ const PeopleList: React.FC = () => {
       }
     },
   ];
+
 
   return (
     <PageContainer>
@@ -147,6 +200,7 @@ const PeopleList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
+        expandable={{expandedRowRender}}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
