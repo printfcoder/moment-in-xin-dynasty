@@ -4,4 +4,5 @@
 《秦汉官制史稿》 <br />
 《中国政治制度史纲》<br />
 《中国历代年号考》 <br />
-https://www.docin.com/p-2914321549.html
+https://www.docin.com/p-2914321549.html <br />
+[中国历代纪元表/歷史地圖](https://home.olemiss.edu/~gg/lidaijiy.htm)
