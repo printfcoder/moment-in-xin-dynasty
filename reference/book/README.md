@@ -6,4 +6,7 @@
 《中国历代年号考》 <br />
 [秦汉史基本史料及其相关资料整理](https://www.docin.com/p-2914321549.html) <br />
 [中国历代纪元表/歷史地圖](https://home.olemiss.edu/~gg/lidaijiy.htm) <br />
-[中国哲学电子书计划](https://ctext.org/zhs)
+[中国哲学电子书计划](https://ctext.org/zhs) <br />
+[《帝室与外家：西汉政治中的家族伦理》杭苏红]() <br />
+[《西汉君主的信息获取渠道研究》赵静文;赵国华]() <br />
+[《两汉政府决策信息采收渠道研究》杨蕴芳]() <br />
