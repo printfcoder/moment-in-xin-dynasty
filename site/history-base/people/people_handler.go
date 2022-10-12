@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/common"
+	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/model"
 	log "github.com/stack-labs/stack/logger"
 	"github.com/stack-labs/stack/service/web"
 )
@@ -34,8 +35,12 @@ func Handlers() []web.HandlerFunc {
 			DelHandler,
 		},
 		{
-			"/people/update",
+			"people/update",
 			UpdateHandler,
+		},
+		{
+			"people/event-list",
+			EventListHandler,
 		},
 	}
 }
@@ -113,7 +118,7 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddHandler(w http.ResponseWriter, r *http.Request) {
-	var pr PeopleRelation
+	var pr model.PeopleRelation
 	rsp := &common.HTTPRsp{}
 
 	err := json.NewDecoder(r.Body).Decode(&pr)
@@ -147,7 +152,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateHandler(w http.ResponseWriter, r *http.Request) {
-	var pr PeopleRelation
+	var pr model.PeopleRelation
 	rsp := &common.HTTPRsp{}
 
 	err := json.NewDecoder(r.Body).Decode(&pr)
@@ -194,6 +199,10 @@ func RelationEnum(w http.ResponseWriter, r *http.Request) {
 	writeSuccessHTTP(w, &common.HTTPRsp{
 		Data: enums,
 	})
+}
+
+func EventListHandler(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func writeFailHTTP(w http.ResponseWriter, rsp *common.HTTPRsp, err error) {

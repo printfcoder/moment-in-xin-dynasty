@@ -6,10 +6,11 @@ import (
 
 	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/common"
 	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/db"
+	"github.com/printfcoder/moment-in-xin-dynasty/site/history-base/model"
 	log "github.com/stack-labs/stack/logger"
 )
 
-func list(name string, current, pageSize int) (peoples []*People, count int, err error) {
+func list(name string, current, pageSize int) (peoples []*model.People, count int, err error) {
 	whereSQL := " WHERE 1=1 "
 	if name != "" {
 		whereSQL += "AND name LIKE '%" + name + "%'"
@@ -29,7 +30,7 @@ func list(name string, current, pageSize int) (peoples []*People, count int, err
 	}
 
 	for rows.Next() {
-		p := People{}
+		p := model.People{}
 		err = rows.Scan(&p.ID, &p.Name, &p.BirthDay, &p.DeathDay)
 		if err != nil {
 			return nil, 0, common.NewError(common.ErrorDBQueryScan, err)
@@ -57,7 +58,7 @@ func del(id int) (err error) {
 	return
 }
 
-func get(id int) (pr *PeopleRelation, err error) {
+func get(id int) (pr *model.PeopleRelation, err error) {
 	row := db.DB().QueryRow("SELECT id, name, birthday, deathday FROM people WHERE id = ?", id)
 	if row.Err() != nil {
 		if row.Err() == sql.ErrNoRows {
@@ -67,7 +68,7 @@ func get(id int) (pr *PeopleRelation, err error) {
 	}
 
 	// 人物
-	pr = &PeopleRelation{}
+	pr = &model.PeopleRelation{}
 	err = row.Scan(&pr.People.ID, &pr.People.Name, &pr.People.BirthDay, &pr.People.DeathDay)
 	if err != nil {
 		return nil, common.NewError(common.ErrorDBQueryScan, err)
@@ -81,7 +82,7 @@ func get(id int) (pr *PeopleRelation, err error) {
 
 	// 关系列表
 	for rows.Next() {
-		r := Relation{}
+		r := model.Relation{}
 		err = rows.Scan(&r.PeopleIDB, &r.Relation, &r.RelationIdx, &r.RelationBegin, &r.RelationEnd)
 		if err != nil {
 			return nil, common.NewError(common.ErrorDBQueryScan, err)
@@ -93,7 +94,7 @@ func get(id int) (pr *PeopleRelation, err error) {
 	return pr, nil
 }
 
-func add(pr PeopleRelation) (err error) {
+func add(pr model.PeopleRelation) (err error) {
 	var tx *sql.Tx
 	tx, err = db.DB().Begin()
 	if err != nil {
@@ -146,7 +147,7 @@ func add(pr PeopleRelation) (err error) {
 	return nil
 }
 
-func update(pr PeopleRelation) (err error) {
+func update(pr model.PeopleRelation) (err error) {
 	var tx *sql.Tx
 	tx, err = db.DB().Begin()
 	if err != nil {
