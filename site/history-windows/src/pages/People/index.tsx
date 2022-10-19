@@ -50,44 +50,83 @@ const expandedRowRender = () => {
     });
   }
   return (
-    <ProTable
-      columns={[
-        {title: 'id', dataIndex: 'date', key: 'date'},
-        {title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>, dataIndex: 'name', key: 'name'},
-        {
-          title: <FormattedMessage id="pages.people.relation" defaultMessage="关系"/>,
-          dataIndex: 'upgradeNum',
-          key: 'upgradeNum'
-        },
-        {
-          title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
-          dataIndex: 'upgradeNum',
-          key: 'upgradeNum'
-        },
-        {
-          title: <FormattedMessage id="pages.people.relationStart" defaultMessage="始"/>,
-          dataIndex: 'upgradeNum',
-          key: 'upgradeNum'
-        },
-        {
-          title: <FormattedMessage id="pages.people.relationEnd" defaultMessage="终"/>,
-          dataIndex: 'upgradeNum',
-          key: 'upgradeNum'
-        },
-        {
-          title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="操作"/>,
-          dataIndex: 'operation',
-          key: 'operation',
-          valueType: 'option',
-          render: () => [<a key="Pause">Pause</a>, <a key="Stop">Stop</a>],
-        },
-      ]}
-      headerTitle={false}
-      search={false}
-      options={false}
-      dataSource={data}
-      pagination={false}
-    />
+    <>
+      <ProTable
+        columns={[
+          {title: 'id', dataIndex: 'date', key: 'date'},
+          {title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>, dataIndex: 'name', key: 'name'},
+          {
+            title: <FormattedMessage id="pages.people.relation" defaultMessage="关系"/>,
+            dataIndex: 'upgradeNum',
+            key: 'upgradeNum'
+          },
+          {
+            title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
+            dataIndex: 'upgradeNum',
+            key: 'upgradeNum'
+          },
+          {
+            title: <FormattedMessage id="pages.people.relationStart" defaultMessage="始"/>,
+            dataIndex: 'upgradeNum',
+            key: 'upgradeNum'
+          },
+          {
+            title: <FormattedMessage id="pages.people.relationEnd" defaultMessage="终"/>,
+            dataIndex: 'upgradeNum',
+            key: 'upgradeNum'
+          },
+          {
+            title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="操作"/>,
+            dataIndex: 'operation',
+            key: 'operation',
+            valueType: 'option',
+            render: () => [<a key="Pause">Pause</a>, <a key="Stop">Stop</a>],
+          },
+        ]}
+        headerTitle={false}
+        search={false}
+        options={false}
+        dataSource={data}
+        pagination={false}
+      />
+      <ProTable
+        columns={[
+          {title: 'id', dataIndex: 'date', key: 'date'},
+          {title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>, dataIndex: 'name', key: 'name'},
+          {
+            title: <FormattedMessage id="pages.people.relation" defaultMessage="关系"/>,
+            dataIndex: 'upgradeNum',
+            key: 'upgradeNum'
+          },
+          {
+            title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
+            dataIndex: 'upgradeNum',
+            key: 'upgradeNum'
+          },
+          {
+            title: <FormattedMessage id="pages.people.relationStart" defaultMessage="始"/>,
+            dataIndex: 'upgradeNum',
+            key: 'upgradeNum'
+          },
+          {
+            title: <FormattedMessage id="pages.people.relationEnd" defaultMessage="终"/>,
+            dataIndex: 'upgradeNum',
+            key: 'upgradeNum'
+          },
+          {
+            title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="操作"/>,
+            dataIndex: 'operation',
+            key: 'operation',
+            valueType: 'option',
+            render: () => [<a key="Pause">Pause</a>, <a key="Stop">Stop</a>],
+          },
+        ]}
+        headerTitle={false}
+        search={false}
+        options={false}
+        dataSource={data}
+        pagination={false}
+      /></>
   );
 };
 
