@@ -6,7 +6,7 @@ import {
   ProFormDependency,
   ProFormText, ProFormDigit,
 } from '@ant-design/pro-components';
-import {Alert, Form, message} from 'antd';
+import {Form, message} from 'antd';
 import React from "react";
 import {
   addPeople,
