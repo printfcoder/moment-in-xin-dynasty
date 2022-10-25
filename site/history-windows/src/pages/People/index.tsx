@@ -43,6 +43,7 @@ const expandedRowRender = () => {
   const data = [];
   for (let i = 0; i < 3; i += 1) {
     data.push({
+      size: 3,
       key: i,
       date: '2014-12-24 23:12:00',
       name: 'This is production name',
@@ -53,6 +54,14 @@ const expandedRowRender = () => {
     <>
       <ProTable
         columns={[
+          {
+            title: 'id', dataIndex: 'date', key: 'date', colSpan: 2,
+            onCell: (cell) => {
+              return {
+                rowSpan: cell.size,
+              }
+            },
+          },
           {title: 'id', dataIndex: 'date', key: 'date'},
           {title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>, dataIndex: 'name', key: 'name'},
           {

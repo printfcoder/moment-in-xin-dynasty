@@ -39,8 +39,12 @@ func Handlers() []web.HandlerFunc {
 			UpdateHandler,
 		},
 		{
-			"people/event-list",
-			EventListHandler,
+			"people/relate-to-me",
+			RelateToMe,
+		},
+		{
+			"people/i-relate-to",
+			IRelateTo,
 		},
 	}
 }
@@ -201,8 +205,42 @@ func RelationEnum(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func EventListHandler(w http.ResponseWriter, r *http.Request) {
+func RelateToMe(w http.ResponseWriter, r *http.Request) {
+	rsp := &common.HTTPRsp{}
+	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	if id == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidID, nil))
+		return
+	}
 
+	peoples, err := relateToMe(id)
+	if err != nil {
+		writeFailHTTP(w, rsp, err)
+		return
+	}
+
+	rsp.Data = peoples
+
+	writeSuccessHTTP(w, rsp)
+}
+
+func IRelateTo(w http.ResponseWriter, r *http.Request) {
+	rsp := &common.HTTPRsp{}
+	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	if id == 0 {
+		writeFailHTTP(w, rsp, common.NewError(common.ErrorPeopleInvalidID, nil))
+		return
+	}
+
+	peoples, err := iRelateTo(id)
+	if err != nil {
+		writeFailHTTP(w, rsp, err)
+		return
+	}
+
+	rsp.Data = peoples
+
+	writeSuccessHTTP(w, rsp)
 }
 
 func writeFailHTTP(w http.ResponseWriter, rsp *common.HTTPRsp, err error) {

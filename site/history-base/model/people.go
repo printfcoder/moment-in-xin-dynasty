@@ -16,6 +16,11 @@ type Relation struct {
 	RelationEnd   *string `json:"relationEnd,omitempty"`
 }
 
+type RelationView struct {
+	Relation
+	Name string `json:"name,omitempty"`
+}
+
 type PeopleRelation struct {
 	People    People     `json:"people"`
 	Relations []Relation `json:"relations,omitempty"`

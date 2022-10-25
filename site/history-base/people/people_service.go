@@ -10,6 +10,19 @@ import (
 	log "github.com/stack-labs/stack/logger"
 )
 
+const (
+	iRelateToSQL = `SELECT p.name, people_id_a, people_id_b, relation, relation_idx, relation_begin, relation_end
+						FROM people_relation pr
+						         INNER JOIN people p
+						                    ON pr.people_id_b = p.id
+						WHERE pr.people_id_a = ?`
+	relateToMeSQL = `SELECT p.name, people_id_a, people_id_b, relation, relation_idx, relation_begin, relation_end
+						FROM people_relation pr
+						         INNER JOIN people p
+						                    ON pr.people_id_a = p.id
+						WHERE pr.people_id_b = ?`
+)
+
 func list(name string, current, pageSize int) (peoples []*model.People, count int, err error) {
 	whereSQL := " WHERE 1=1 "
 	if name != "" {
@@ -212,4 +225,46 @@ func update(pr model.PeopleRelation) (err error) {
 	}
 
 	return nil
+}
+
+func iRelateTo(id int) (peoples []*model.RelationView, err error) {
+	var rows *sql.Rows
+	rows, err = db.DB().Query(iRelateToSQL, id)
+	if err != nil {
+		return nil, common.NewError(common.ErrorDBQuery, err)
+	}
+
+	// 关系列表
+	for rows.Next() {
+		r := &model.RelationView{}
+		err = rows.Scan(&r.Name, &r.PeopleIDA, &r.PeopleIDB, &r.Relation.Relation, &r.RelationIdx, &r.RelationBegin, &r.RelationEnd)
+		if err != nil {
+			return nil, common.NewError(common.ErrorDBQueryScan, err)
+		}
+
+		peoples = append(peoples, r)
+	}
+
+	return
+}
+
+func relateToMe(id int) (peoples []*model.RelationView, err error) {
+	var rows *sql.Rows
+	rows, err = db.DB().Query(relateToMeSQL, id)
+	if err != nil {
+		return nil, common.NewError(common.ErrorDBQuery, err)
+	}
+
+	// 关系列表
+	for rows.Next() {
+		r := &model.RelationView{}
+		err = rows.Scan(&r.Name, &r.PeopleIDA, &r.PeopleIDB, &r.Relation.Relation, &r.RelationIdx, &r.RelationBegin, &r.RelationEnd)
+		if err != nil {
+			return nil, common.NewError(common.ErrorDBQueryScan, err)
+		}
+
+		peoples = append(peoples, r)
+	}
+
+	return
 }
