@@ -1,4 +1,4 @@
-import {deletePeople, listPeople} from '@/services/history/listPeople';
+import {deletePeople, listPeople, relateToMe} from '@/services/history/listPeople';
 import type {ActionType, ProColumns} from '@ant-design/pro-components';
 import {
   FooterToolbar,
@@ -39,105 +39,137 @@ export type modelState = {
   isModalOpen: boolean;
 };
 
-const expandedRowRender = () => {
-  const data = [];
-  for (let i = 0; i < 3; i += 1) {
-    data.push({
-      size: 3,
-      key: i,
-      date: '2014-12-24 23:12:00',
-      name: 'This is production name',
-      upgradeNum: 'Upgraded: 56',
-    });
+const peopleRelationTableRender = () => {
+  type peopleRelationState = {};
+
+  const [peopleRelationState, updatePeopleRelation] = useState<peopleRelationState>({})
+
+  interface DataType {
+    key: string;
+    name: string;
+    age: number;
+    tel: string;
+    phone: number;
+    address: string;
   }
-  return (
-    <>
-      <ProTable
-        columns={[
-          {
-            title: 'id', dataIndex: 'date', key: 'date', colSpan: 2,
-            onCell: (cell) => {
-              return {
-                rowSpan: cell.size,
-              }
-            },
-          },
-          {title: 'id', dataIndex: 'date', key: 'date'},
-          {title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>, dataIndex: 'name', key: 'name'},
-          {
-            title: <FormattedMessage id="pages.people.relation" defaultMessage="关系"/>,
-            dataIndex: 'upgradeNum',
-            key: 'upgradeNum'
-          },
-          {
-            title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
-            dataIndex: 'upgradeNum',
-            key: 'upgradeNum'
-          },
-          {
-            title: <FormattedMessage id="pages.people.relationStart" defaultMessage="始"/>,
-            dataIndex: 'upgradeNum',
-            key: 'upgradeNum'
-          },
-          {
-            title: <FormattedMessage id="pages.people.relationEnd" defaultMessage="终"/>,
-            dataIndex: 'upgradeNum',
-            key: 'upgradeNum'
-          },
-          {
-            title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="操作"/>,
-            dataIndex: 'operation',
-            key: 'operation',
-            valueType: 'option',
-            render: () => [<a key="Pause">Pause</a>, <a key="Stop">Stop</a>],
-          },
-        ]}
-        headerTitle={false}
-        search={false}
-        options={false}
-        dataSource={data}
-        pagination={false}
-      />
-      <ProTable
-        columns={[
-          {title: 'id', dataIndex: 'date', key: 'date'},
-          {title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>, dataIndex: 'name', key: 'name'},
-          {
-            title: <FormattedMessage id="pages.people.relation" defaultMessage="关系"/>,
-            dataIndex: 'upgradeNum',
-            key: 'upgradeNum'
-          },
-          {
-            title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
-            dataIndex: 'upgradeNum',
-            key: 'upgradeNum'
-          },
-          {
-            title: <FormattedMessage id="pages.people.relationStart" defaultMessage="始"/>,
-            dataIndex: 'upgradeNum',
-            key: 'upgradeNum'
-          },
-          {
-            title: <FormattedMessage id="pages.people.relationEnd" defaultMessage="终"/>,
-            dataIndex: 'upgradeNum',
-            key: 'upgradeNum'
-          },
-          {
-            title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="操作"/>,
-            dataIndex: 'operation',
-            key: 'operation',
-            valueType: 'option',
-            render: () => [<a key="Pause">Pause</a>, <a key="Stop">Stop</a>],
-          },
-        ]}
-        headerTitle={false}
-        search={false}
-        options={false}
-        dataSource={data}
-        pagination={false}
-      /></>
-  );
+
+  // In the fifth row, other columns are merged into first column
+  // by setting it's colSpan to be 0
+  const sharedOnCell = (_: DataType, index: number) => {
+    if (index === 4) {
+      return {colSpan: 0};
+    }
+
+    return {};
+  };
+
+  const columns: ProColumns<History.PeopleRelation>[] = [
+    {
+      title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>,
+      dataIndex: 'name',
+      render: text => <a>{text}</a>,
+      onCell: (_, index) => ({
+        colSpan: (index as number) < 4 ? 1 : 5,
+      }),
+    },
+    {
+      title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
+      dataIndex: 'age',
+      onCell: sharedOnCell,
+    },
+    {
+      title: <FormattedMessage id="pages.people.relationStart" defaultMessage="顺位"/>,
+      dataIndex: 'age',
+      onCell: sharedOnCell,
+    },
+    {
+      title: <FormattedMessage id="pages.people.relationEnd" defaultMessage="始"/>,
+      colSpan: 2,
+      dataIndex: 'tel',
+      onCell: (_, index) => {
+        if (index === 2) {
+          return {rowSpan: 2};
+        }
+        // These two are merged into above cell
+        if (index === 3) {
+          return {rowSpan: 0};
+        }
+        if (index === 4) {
+          return {colSpan: 0};
+        }
+
+        return {};
+      },
+    },
+    {
+      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="终"/>,
+      colSpan: 0,
+      dataIndex: 'phone',
+      onCell: sharedOnCell,
+    }
+  ];
+
+  const data: DataType[] = [
+    {
+      key: '1',
+      name: 'John Brown',
+      age: 32,
+      tel: '0571-22098909',
+      phone: 18889898989,
+      address: 'New York No. 1 Lake Park',
+    },
+    {
+      key: '2',
+      name: 'Jim Green',
+      tel: '0571-22098333',
+      phone: 18889898888,
+      age: 42,
+      address: 'London No. 1 Lake Park',
+    },
+    {
+      key: '3',
+      name: 'Joe Black',
+      age: 32,
+      tel: '0575-22098909',
+      phone: 18900010002,
+      address: 'Sidney No. 1 Lake Park',
+    },
+    {
+      key: '4',
+      name: 'Jim Red',
+      age: 18,
+      tel: '0575-22098909',
+      phone: 18900010002,
+      address: 'London No. 2 Lake Park',
+    },
+    {
+      key: '5',
+      name: 'Jake White',
+      age: 18,
+      tel: '0575-22098909',
+      phone: 18900010002,
+      address: 'Dublin No. 2 Lake Park',
+    },
+  ];
+
+  return <ProTable columns={columns} request={relateToMe} bordered pagination={false}/>
 };
+
+const onExpand = async (expanded: boolean, record: History.People) => {
+  if (expanded) {
+    debugger
+    const hide = message.loading('正在加载' + record.name + "人物关系");
+    try {
+      await relateToMe({id: record.id}).then()
+      hide();
+      return;
+    } catch (error) {
+      hide();
+      message.error('加载失败');
+      return;
+    }
+  }
+}
 
 const PeopleList: React.FC = () => {
   /**
@@ -217,7 +249,6 @@ const PeopleList: React.FC = () => {
     },
   ];
 
-
   return (
     <PageContainer>
       <ProTable<History.People, Common.PageParams>
@@ -248,7 +279,7 @@ const PeopleList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        expandable={{expandedRowRender}}
+        expandable={{expandedRowRender: peopleRelationTableRender, onExpand}}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar

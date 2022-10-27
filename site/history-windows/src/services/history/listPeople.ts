@@ -72,6 +72,32 @@ export async function deletePeople(params: {
   });
 }
 
+/** 与我有关的人物 */
+export async function relateToMe(params: {
+  id: number;
+}, options?: { [key: string]: any }) {
+  return request<Common.HTTPRsp<any>>('/api/history/people/relate-to-me', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+/** 我有关的人物 */
+export async function iRelateTo(params: {
+  id: number;
+}, options?: { [key: string]: any }) {
+  return request<Common.HTTPRsp<any>>('/api/history/people/i-relate-to', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
 /** 人物关系枚举 */
 export async function RelationEnum(options?: { [key: string]: any }) {
   if (loadedRelationEnum.length > 0) {

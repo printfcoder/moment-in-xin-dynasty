@@ -18,6 +18,8 @@ declare namespace History {
 
   type PeopleRelation = {
     key?: number;
+    name?: string;
+    peopleIDA?: number;
     peopleIDB: number;
     relation: string;
     relationIdx: number;
