@@ -1,6 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import {request} from '@umijs/max';
+import PeopleRelation = History.PeopleRelation;
 
 let loadedRelationEnum: any[] = [];
 
@@ -76,13 +77,13 @@ export async function deletePeople(params: {
 export async function relateToMe(params: {
   id: number;
 }, options?: { [key: string]: any }) {
-  return request<Common.HTTPRsp<any>>('/api/history/people/relate-to-me', {
+  return request<Common.HTTPRsp<PeopleRelation[]>>('/api/history/people/relate-to-me', {
     method: 'GET',
     params: {
       ...params,
     },
     ...(options || {}),
-  });
+  })
 }
 
 /** 我有关的人物 */

@@ -6,10 +6,12 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import {FormattedMessage} from '@umijs/max';
-import {Button, message, Popconfirm} from 'antd';
+import {Button, message, Popconfirm, Table} from 'antd';
 import React, {useRef, useState} from 'react';
 import PeopleForm, {modelType} from './components/PeopleForm';
 import {PlusOutlined, QuestionCircleOutlined} from "@ant-design/icons";
+import PeopleRelation = History.PeopleRelation;
+import type {ColumnsType} from "antd/es/table";
 
 /**
  *  Delete node
@@ -39,11 +41,9 @@ export type modelState = {
   isModalOpen: boolean;
 };
 
-const peopleRelationTableRender = () => {
-  type peopleRelationState = {};
+const peopleRelationData = {}
 
-  const [peopleRelationState, updatePeopleRelation] = useState<peopleRelationState>({})
-
+const peopleRelationTableRender = (record: History.People) => {
   interface DataType {
     key: string;
     name: string;
@@ -63,10 +63,10 @@ const peopleRelationTableRender = () => {
     return {};
   };
 
-  const columns: ProColumns<History.PeopleRelation>[] = [
+  const columns: ColumnsType<History.PeopleRelation> = [
     {
       title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>,
-      dataIndex: 'name',
+      dataIndex: 'peopleIDA',
       render: text => <a>{text}</a>,
       onCell: (_, index) => ({
         colSpan: (index as number) < 4 ? 1 : 5,
@@ -74,7 +74,7 @@ const peopleRelationTableRender = () => {
     },
     {
       title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
-      dataIndex: 'age',
+      dataIndex: 'relationIdx',
       onCell: sharedOnCell,
     },
     {
@@ -109,58 +109,19 @@ const peopleRelationTableRender = () => {
     }
   ];
 
-  const data: DataType[] = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      tel: '0571-22098909',
-      phone: 18889898989,
-      address: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      tel: '0571-22098333',
-      phone: 18889898888,
-      age: 42,
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      tel: '0575-22098909',
-      phone: 18900010002,
-      address: 'Sidney No. 1 Lake Park',
-    },
-    {
-      key: '4',
-      name: 'Jim Red',
-      age: 18,
-      tel: '0575-22098909',
-      phone: 18900010002,
-      address: 'London No. 2 Lake Park',
-    },
-    {
-      key: '5',
-      name: 'Jake White',
-      age: 18,
-      tel: '0575-22098909',
-      phone: 18900010002,
-      address: 'Dublin No. 2 Lake Park',
-    },
-  ];
-
-  return <ProTable columns={columns} request={relateToMe} bordered pagination={false}/>
+  return <Table columns={columns} dataSource={peopleRelationData[record.id]} bordered pagination={false}/>
 };
 
 const onExpand = async (expanded: boolean, record: History.People) => {
   if (expanded) {
-    debugger
     const hide = message.loading('正在加载' + record.name + "人物关系");
     try {
-      await relateToMe({id: record.id}).then()
+      const rsp: Common.HTTPRsp<PeopleRelation[]> = await relateToMe({id: record.id});
+      if (rsp.success) {
+        peopleRelationData[record.id] = rsp.data
+      } else {
+        message.error('加载失败：' + rsp.error);
+      }
       hide();
       return;
     } catch (error) {
