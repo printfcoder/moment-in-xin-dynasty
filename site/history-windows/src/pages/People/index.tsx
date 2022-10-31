@@ -6,10 +6,12 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import {FormattedMessage} from '@umijs/max';
-import {Button, message, Popconfirm} from 'antd';
+import {Button, message, Popconfirm, Table} from 'antd';
 import React, {useRef, useState} from 'react';
 import PeopleForm, {modelType} from './components/PeopleForm';
 import {PlusOutlined, QuestionCircleOutlined} from "@ant-design/icons";
+import PeopleRelation = History.PeopleRelation;
+import type {ColumnsType} from "antd/es/table";
 
 /**
  *  Delete node
@@ -39,135 +41,70 @@ export type modelState = {
   isModalOpen: boolean;
 };
 
-const peopleRelationTableRender = () => {
-  type peopleRelationState = {};
+const peopleRelationData = {}
 
-  const [peopleRelationState, updatePeopleRelation] = useState<peopleRelationState>({})
-
-  interface DataType {
-    key: string;
-    name: string;
-    age: number;
-    tel: string;
-    phone: number;
-    address: string;
-  }
-
-  // In the fifth row, other columns are merged into first column
-  // by setting it's colSpan to be 0
-  const sharedOnCell = (_: DataType, index: number) => {
-    if (index === 4) {
-      return {colSpan: 0};
+const getPeopleRelationData = async (record: History.People) => {
+  const hide = message.loading('正在加载' + record.name + "人物关系");
+  try {
+    const rsp: Common.HTTPRsp<PeopleRelation[]> = await relateToMe({id: record.id});
+    if (rsp.success) {
+      // peopleRelationData[record.id] = rsp.data
+      return rsp.data
+    } else {
+      message.error('加载失败：' + rsp.error);
     }
+    hide();
+  } catch (error) {
+    hide();
+    message.error('加载失败');
+  } finally {
+    return [];
+  }
+}
 
-    return {};
-  };
-
-  const columns: ProColumns<History.PeopleRelation>[] = [
+const peopleRelationTableRender = (record: History.People) => {
+  const columns: ColumnsType<History.PeopleRelation> = [
     {
       title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>,
       dataIndex: 'name',
-      render: text => <a>{text}</a>,
-      onCell: (_, index) => ({
-        colSpan: (index as number) < 4 ? 1 : 5,
-      }),
+    },
+    {
+      title: <FormattedMessage id="pages.people.relation" defaultMessage="关系"/>,
+      dataIndex: 'relation',
     },
     {
       title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
-      dataIndex: 'age',
-      onCell: sharedOnCell,
+      dataIndex: 'relationIdx',
     },
     {
       title: <FormattedMessage id="pages.people.relationStart" defaultMessage="顺位"/>,
-      dataIndex: 'age',
-      onCell: sharedOnCell,
+      dataIndex: 'relationStart',
     },
     {
       title: <FormattedMessage id="pages.people.relationEnd" defaultMessage="始"/>,
-      colSpan: 2,
-      dataIndex: 'tel',
-      onCell: (_, index) => {
-        if (index === 2) {
-          return {rowSpan: 2};
-        }
-        // These two are merged into above cell
-        if (index === 3) {
-          return {rowSpan: 0};
-        }
-        if (index === 4) {
-          return {colSpan: 0};
-        }
-
-        return {};
-      },
-    },
-    {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="终"/>,
-      colSpan: 0,
-      dataIndex: 'phone',
-      onCell: sharedOnCell,
+      dataIndex: 'relationEnd',
     }
   ];
 
-  const data: DataType[] = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      tel: '0571-22098909',
-      phone: 18889898989,
-      address: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      tel: '0571-22098333',
-      phone: 18889898888,
-      age: 42,
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      tel: '0575-22098909',
-      phone: 18900010002,
-      address: 'Sidney No. 1 Lake Park',
-    },
-    {
-      key: '4',
-      name: 'Jim Red',
-      age: 18,
-      tel: '0575-22098909',
-      phone: 18900010002,
-      address: 'London No. 2 Lake Park',
-    },
-    {
-      key: '5',
-      name: 'Jake White',
-      age: 18,
-      tel: '0575-22098909',
-      phone: 18900010002,
-      address: 'Dublin No. 2 Lake Park',
-    },
-  ];
-
-  return <ProTable columns={columns} request={relateToMe} bordered pagination={false}/>
+  return <Table rowKey={(r: PeopleRelation) => r.name} columns={columns}
+                dataSource={getPeopleRelationData(record)} bordered pagination={false}/>
 };
 
 const onExpand = async (expanded: boolean, record: History.People) => {
-  if (expanded) {
-    debugger
-    const hide = message.loading('正在加载' + record.name + "人物关系");
-    try {
-      await relateToMe({id: record.id}).then()
-      hide();
-      return;
-    } catch (error) {
-      hide();
-      message.error('加载失败');
-      return;
+  const hide = message.loading('正在加载' + record.name + "人物关系");
+  try {
+    const rsp: Common.HTTPRsp<PeopleRelation[]> = await relateToMe({id: record.id});
+    if (rsp.success) {
+      peopleRelationData[record.id] = rsp.data
+    } else {
+      message.error('加载失败：' + rsp.error);
     }
+    hide();
+    return;
+  } catch (error) {
+    hide();
+    message.error('加载失败');
+    return;
   }
 }
 
@@ -279,7 +216,10 @@ const PeopleList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        expandable={{expandedRowRender: peopleRelationTableRender, onExpand}}
+        expandable={{
+          onExpand,
+          expandedRowRender: peopleRelationTableRender,
+        }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
