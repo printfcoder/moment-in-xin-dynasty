@@ -43,92 +43,68 @@ export type modelState = {
 
 const peopleRelationData = {}
 
-const peopleRelationTableRender = (record: History.People) => {
-  interface DataType {
-    key: string;
-    name: string;
-    age: number;
-    tel: string;
-    phone: number;
-    address: string;
-  }
-
-  // In the fifth row, other columns are merged into first column
-  // by setting it's colSpan to be 0
-  const sharedOnCell = (_: DataType, index: number) => {
-    if (index === 4) {
-      return {colSpan: 0};
+const getPeopleRelationData = async (record: History.People) => {
+  const hide = message.loading('正在加载' + record.name + "人物关系");
+  try {
+    const rsp: Common.HTTPRsp<PeopleRelation[]> = await relateToMe({id: record.id});
+    if (rsp.success) {
+      // peopleRelationData[record.id] = rsp.data
+      return rsp.data
+    } else {
+      message.error('加载失败：' + rsp.error);
     }
+    hide();
+  } catch (error) {
+    hide();
+    message.error('加载失败');
+  } finally {
+    return [];
+  }
+}
 
-    return {};
-  };
-
+const peopleRelationTableRender = (record: History.People) => {
   const columns: ColumnsType<History.PeopleRelation> = [
     {
       title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>,
-      dataIndex: 'peopleIDA',
-      render: text => <a>{text}</a>,
-      onCell: (_, index) => ({
-        colSpan: (index as number) < 4 ? 1 : 5,
-      }),
+      dataIndex: 'name',
+    },
+    {
+      title: <FormattedMessage id="pages.people.relation" defaultMessage="关系"/>,
+      dataIndex: 'relation',
     },
     {
       title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
       dataIndex: 'relationIdx',
-      onCell: sharedOnCell,
     },
     {
       title: <FormattedMessage id="pages.people.relationStart" defaultMessage="顺位"/>,
-      dataIndex: 'age',
-      onCell: sharedOnCell,
+      dataIndex: 'relationStart',
     },
     {
       title: <FormattedMessage id="pages.people.relationEnd" defaultMessage="始"/>,
-      colSpan: 2,
-      dataIndex: 'tel',
-      onCell: (_, index) => {
-        if (index === 2) {
-          return {rowSpan: 2};
-        }
-        // These two are merged into above cell
-        if (index === 3) {
-          return {rowSpan: 0};
-        }
-        if (index === 4) {
-          return {colSpan: 0};
-        }
-
-        return {};
-      },
-    },
-    {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="终"/>,
-      colSpan: 0,
-      dataIndex: 'phone',
-      onCell: sharedOnCell,
+      dataIndex: 'relationEnd',
     }
   ];
 
-  return <Table columns={columns} dataSource={peopleRelationData[record.id]} bordered pagination={false}/>
+  return <Table rowKey={(r: PeopleRelation) => r.name} columns={columns}
+                dataSource={getPeopleRelationData(record)} bordered pagination={false}/>
 };
 
 const onExpand = async (expanded: boolean, record: History.People) => {
-  if (expanded) {
-    const hide = message.loading('正在加载' + record.name + "人物关系");
-    try {
-      const rsp: Common.HTTPRsp<PeopleRelation[]> = await relateToMe({id: record.id});
-      if (rsp.success) {
-        peopleRelationData[record.id] = rsp.data
-      } else {
-        message.error('加载失败：' + rsp.error);
-      }
-      hide();
-      return;
-    } catch (error) {
-      hide();
-      message.error('加载失败');
-      return;
+  const hide = message.loading('正在加载' + record.name + "人物关系");
+  try {
+    const rsp: Common.HTTPRsp<PeopleRelation[]> = await relateToMe({id: record.id});
+    if (rsp.success) {
+      peopleRelationData[record.id] = rsp.data
+    } else {
+      message.error('加载失败：' + rsp.error);
     }
+    hide();
+    return;
+  } catch (error) {
+    hide();
+    message.error('加载失败');
+    return;
   }
 }
 
@@ -240,7 +216,10 @@ const PeopleList: React.FC = () => {
             setSelectedRows(selectedRows);
           },
         }}
-        expandable={{expandedRowRender: peopleRelationTableRender, onExpand}}
+        expandable={{
+          onExpand,
+          expandedRowRender: peopleRelationTableRender,
+        }}
       />
       {selectedRowsState?.length > 0 && (
         <FooterToolbar
