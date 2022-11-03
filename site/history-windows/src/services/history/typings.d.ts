@@ -1,6 +1,8 @@
 // @ts-ignore
 /* eslint-disable */
 
+import {RelationEnum} from "@/services/history/listPeople";
+
 declare namespace History {
   type People = {
     key?: number;
@@ -53,4 +55,6 @@ declare namespace History {
     description?: string;
     type?: NoticeIconItemType;
   };
+
+  RelationEnum
 }
