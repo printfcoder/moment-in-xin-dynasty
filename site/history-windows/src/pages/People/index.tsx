@@ -1,4 +1,4 @@
-import {deletePeople, listPeople, relateToMe} from '@/services/history/listPeople';
+import {deletePeople, listPeople} from '@/services/history/listPeople';
 import type {ActionType, ProColumns} from '@ant-design/pro-components';
 import {
   FooterToolbar,
@@ -6,12 +6,11 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import {FormattedMessage} from '@umijs/max';
-import {Button, message, Popconfirm, Table} from 'antd';
+import {Button, message, Popconfirm} from 'antd';
 import React, {useRef, useState} from 'react';
 import PeopleForm, {modelType} from './components/PeopleForm';
 import {PlusOutlined, QuestionCircleOutlined} from "@ant-design/icons";
-import PeopleRelation = History.PeopleRelation;
-import type {ColumnsType} from "antd/es/table";
+import RelationsSubTable from "@/pages/People/RelationsSubTable";
 
 /**
  *  Delete node
@@ -41,71 +40,12 @@ export type modelState = {
   isModalOpen: boolean;
 };
 
-const peopleRelationData = {}
-
-const getPeopleRelationData = async (record: History.People) => {
-  const hide = message.loading('正在加载' + record.name + "人物关系");
-  try {
-    const rsp: Common.HTTPRsp<PeopleRelation[]> = await relateToMe({id: record.id});
-    if (rsp.success) {
-      // peopleRelationData[record.id] = rsp.data
-      return rsp.data
-    } else {
-      message.error('加载失败：' + rsp.error);
-    }
-    hide();
-  } catch (error) {
-    hide();
-    message.error('加载失败');
-  } finally {
-    return [];
-  }
-}
-
 const peopleRelationTableRender = (record: History.People) => {
-  const columns: ColumnsType<History.PeopleRelation> = [
-    {
-      title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>,
-      dataIndex: 'name',
-    },
-    {
-      title: <FormattedMessage id="pages.people.relation" defaultMessage="关系"/>,
-      dataIndex: 'relation',
-    },
-    {
-      title: <FormattedMessage id="pages.people.relationOrder" defaultMessage="顺位"/>,
-      dataIndex: 'relationIdx',
-    },
-    {
-      title: <FormattedMessage id="pages.people.relationStart" defaultMessage="顺位"/>,
-      dataIndex: 'relationStart',
-    },
-    {
-      title: <FormattedMessage id="pages.people.relationEnd" defaultMessage="始"/>,
-      dataIndex: 'relationEnd',
-    }
-  ];
-
-  return <Table rowKey={(r: PeopleRelation) => r.name} columns={columns}
-                dataSource={getPeopleRelationData(record)} bordered pagination={false}/>
+  return <RelationsSubTable ParentRecord={record}/>
 };
 
 const onExpand = async (expanded: boolean, record: History.People) => {
-  const hide = message.loading('正在加载' + record.name + "人物关系");
-  try {
-    const rsp: Common.HTTPRsp<PeopleRelation[]> = await relateToMe({id: record.id});
-    if (rsp.success) {
-      peopleRelationData[record.id] = rsp.data
-    } else {
-      message.error('加载失败：' + rsp.error);
-    }
-    hide();
-    return;
-  } catch (error) {
-    hide();
-    message.error('加载失败');
-    return;
-  }
+  console.log(expanded, record)
 }
 
 const PeopleList: React.FC = () => {
