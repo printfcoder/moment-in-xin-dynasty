@@ -4,11 +4,16 @@ import {ColumnsType} from "antd/es/table";
 import {FormattedMessage} from "@@/exports";
 import {message, Table} from "antd";
 import PeopleRelation = History.PeopleRelation;
-import {relateToMe} from "@/services/history/listPeople";
+import {iRelateTo, relateToMe} from "@/services/history/listPeople";
+
+export enum RelationType {
+  RelateToMe,
+  IRelateTo
+}
 
 export type RelationsSubTableProps = {
   ParentRecord: People;
-  RelationType:
+  RelationType: RelationType;
 };
 
 const RelationsSubTable: React.FC<RelationsSubTableProps> = (props) => {
@@ -16,6 +21,10 @@ const RelationsSubTable: React.FC<RelationsSubTableProps> = (props) => {
   const [loading, setLoading] = useState(false);
 
   const columns: ColumnsType<History.PeopleRelation> = [
+    {
+      key: new Date().getMilliseconds(),
+      dataIndex: 'name',
+    },
     {
       title: <FormattedMessage id="pages.people.name" defaultMessage="人物"/>,
       dataIndex: 'name',
@@ -39,8 +48,21 @@ const RelationsSubTable: React.FC<RelationsSubTableProps> = (props) => {
   ];
 
   useEffect(() => {
+    let func: (para: any) => Promise<any>;
+    switch (props.RelationType) {
+      case RelationType.RelateToMe:
+        func = relateToMe
+        break
+      case RelationType.IRelateTo:
+        func = iRelateTo
+        break
+      default:
+        console.log("props.RelationType is null. try to use a enum")
+        return
+    }
+
     setLoading(true)
-    relateToMe({id: props.ParentRecord.id}).then((rsp: Common.HTTPRsp<PeopleRelation[]>) => {
+    func({id: props.ParentRecord.id}).then((rsp: Common.HTTPRsp<PeopleRelation[]>) => {
       if (rsp.success) {
         setData(rsp.data ? rsp.data : [])
       } else {

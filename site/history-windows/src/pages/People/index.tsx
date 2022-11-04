@@ -10,7 +10,7 @@ import {Button, message, Popconfirm} from 'antd';
 import React, {useRef, useState} from 'react';
 import PeopleForm, {modelType} from './components/PeopleForm';
 import {PlusOutlined, QuestionCircleOutlined} from "@ant-design/icons";
-import RelationsSubTable from "@/pages/People/RelationsSubTable";
+import RelationsSubTable, {RelationType} from "@/pages/People/RelationsSubTable";
 
 /**
  *  Delete node
@@ -41,7 +41,10 @@ export type modelState = {
 };
 
 const peopleRelationTableRender = (record: History.People) => {
-  return <RelationsSubTable ParentRecord={record}/>
+  return <>
+    <RelationsSubTable ParentRecord={record} RelationType={RelationType.RelateToMe}/>
+    <RelationsSubTable ParentRecord={record} RelationType={RelationType.IRelateTo}/>
+  </>
 };
 
 const onExpand = async (expanded: boolean, record: History.People) => {
