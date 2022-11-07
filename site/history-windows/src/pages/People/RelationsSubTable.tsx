@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
-import People = History.People;
 import {ColumnsType} from "antd/es/table";
 import {FormattedMessage} from "@@/exports";
 import {message, Table} from "antd";
-import PeopleRelation = History.PeopleRelation;
 import {iRelateTo, relateToMe} from "@/services/history/listPeople";
+import History from "@/services/history/typings";
+import People = History.People;
+import PeopleRelation = History.PeopleRelation;
 
 export enum RelationType {
   RelateToMe,

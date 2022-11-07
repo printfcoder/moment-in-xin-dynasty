@@ -11,6 +11,8 @@ import React, {useRef, useState} from 'react';
 import PeopleForm, {modelType} from './components/PeopleForm';
 import {PlusOutlined, QuestionCircleOutlined} from "@ant-design/icons";
 import RelationsSubTable, {RelationType} from "@/pages/People/RelationsSubTable";
+import History from "@/services/history/typings";
+import People = History.People;
 
 /**
  *  Delete node
@@ -18,7 +20,7 @@ import RelationsSubTable, {RelationType} from "@/pages/People/RelationsSubTable"
  *
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: History.People[]) => {
+const handleRemove = async (selectedRows: People[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
