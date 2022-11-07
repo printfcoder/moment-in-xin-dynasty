@@ -58,3 +58,5 @@ declare namespace History {
 
   RelationEnum
 }
+
+export default History

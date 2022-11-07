@@ -2,6 +2,8 @@
 /* eslint-disable */
 import {request} from '@umijs/max';
 import PeopleRelation = History.PeopleRelation;
+import History from "@/services/history/typings";
+import People = History.People;
 
 let loadedRelationEnum: any[] = [];
 
@@ -17,7 +19,7 @@ export async function listPeople(
   },
   options?: { [key: string]: any },
 ) {
-  return request<Common.HTTPRsp<Common.PageData<History.People>>>('/api/history/people/list', {
+  return request<Common.HTTPRsp<Common.PageData<People>>>('/api/history/people/list', {
     method: 'GET',
     params: {
       ...params,

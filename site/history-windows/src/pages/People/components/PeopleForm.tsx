@@ -16,6 +16,8 @@ import {
   deletePeople,
   updatePeople
 } from "@/services/history/listPeople";
+import History from "@/services/history/typings";
+import People = History.People;
 
 export enum modelType {
   UPDATE = 0,
@@ -29,7 +31,7 @@ export type PeopleFormProps = {
   peopleId: number;
   close: () => void;
   open: () => void;
-  values?: Partial<History.People>;
+  values?: Partial<People>;
 };
 
 let allPeoples: History.People[];
