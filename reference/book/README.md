@@ -12,3 +12,4 @@
 [《两汉政府决策信息采收渠道研究》杨蕴芳]() <br />
 [《刘邦“隐于芒砀山泽”再讨论》](https://www.mangshan.net/culture_info.php?softid=92) <br />
 [《浅谈刘邦在秦时当过的亭校长》](https://zhuanlan.zhihu.com/p/68931683)
+[刘邦是个流氓，为什么朝廷能决定让他当亭长？](https://www.zhihu.com/question/36917908/answer/1272862727)
