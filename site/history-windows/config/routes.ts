@@ -50,7 +50,20 @@ export default [
     name: 'people.people-list',
     icon: 'people',
     path: '/people',
-    component: './People',
+    routes: [
+      {
+        path: '/people/people-list',
+        name: 'people.people-list',
+        icon: 'people',
+        component: './People',
+      },
+      {
+        path: '/people/people-map',
+        name: 'people.people-list',
+        icon: 'smile',
+        component: './People/PeopleMap',
+      },
+    ],
   },
   {
     path: '/',
