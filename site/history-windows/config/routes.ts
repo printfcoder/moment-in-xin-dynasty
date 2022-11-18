@@ -47,20 +47,20 @@ export default [
     component: './TableList',
   },
   {
-    name: 'people.people-list',
-    icon: 'people',
+    name: 'people',
+    icon: 'UserOutlined',
     path: '/people',
     routes: [
       {
         path: '/people/people-list',
-        name: 'people.people-list',
-        icon: 'people',
+        name: 'people-list',
+        icon: 'TeamOutlined',
         component: './People',
       },
       {
         path: '/people/people-map',
-        name: 'people.people-list',
-        icon: 'smile',
+        name: 'people-map',
+        icon: 'ApartmentOutlined',
         component: './People/PeopleMap',
       },
     ],

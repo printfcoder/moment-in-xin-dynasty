@@ -49,6 +49,8 @@ export default {
   'menu.editor.flow': '流程编辑器',
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
+  "menu.people": '人物',
   "menu.people.people-list": '人物列表',
+  "menu.people.people-map": '关系谱',
   "pages.people.id": 'id'
 };

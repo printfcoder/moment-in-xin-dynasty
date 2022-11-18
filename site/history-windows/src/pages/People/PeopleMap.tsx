@@ -1,5 +1,6 @@
-import { Button, Descriptions, PageHeader } from 'antd';
+import {Button, Descriptions, PageHeader} from 'antd';
 import React from 'react';
+import G6 from '@antv/g6';
 
 const PeopleMap: React.FC = () => (
   <div className="site-page-header-ghost-wrapper">
