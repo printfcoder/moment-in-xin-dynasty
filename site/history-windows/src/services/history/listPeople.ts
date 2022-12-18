@@ -102,7 +102,7 @@ export async function iRelateTo(params: {
 }
 
 /** 人物关系枚举 */
-export async function RelationEnum(options?: { [key: string]: any }) {
+export async function relationEnum(options?: { [key: string]: any }) {
   if (loadedRelationEnum.length > 0) {
     return loadedRelationEnum
   }

@@ -46,6 +46,10 @@ func Handlers() []web.HandlerFunc {
 			"people/i-relate-to",
 			IRelateTo,
 		},
+		{
+			"people/all-people-and-relation",
+			AllPeopleAndRelateTo,
+		},
 	}
 }
 
@@ -239,6 +243,19 @@ func IRelateTo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rsp.Data = peoples
+
+	writeSuccessHTTP(w, rsp)
+}
+
+func AllPeopleAndRelateTo(w http.ResponseWriter, r *http.Request) {
+	rsp := &common.HTTPRsp{}
+	allData, err := allPeopleAndRelation()
+	if err != nil {
+		writeFailHTTP(w, rsp, err)
+		return
+	}
+
+	rsp.Data = allData
 
 	writeSuccessHTTP(w, rsp)
 }
