@@ -21,6 +21,10 @@ const (
 						         INNER JOIN people p
 						                    ON pr.people_id_a = p.id
 						WHERE pr.people_id_b = ?`
+
+	allPeopleSQL   = `SELECT p.id, p.name, p.birthday, p.deathday FROM people p`
+	allRelationSQL = `SELECT pr.people_id_a, pr.people_id_b, pr.relation, pr.relation_idx, pr.relation_begin, pr.relation_end
+						FROM people_relation pr`
 )
 
 func list(name string, current, pageSize int) (peoples []*model.People, count int, err error) {
@@ -264,6 +268,44 @@ func relateToMe(id int) (peoples []*model.RelationView, err error) {
 		}
 
 		peoples = append(peoples, r)
+	}
+
+	return
+}
+
+func allPeopleAndRelation() (data *model.AllPeopleAndRelation, err error) {
+	var rows *sql.Rows
+	rows, err = db.DB().Query(allPeopleSQL)
+	if err != nil {
+		return nil, common.NewError(common.ErrorDBQuery, err)
+	}
+
+	data = &model.AllPeopleAndRelation{}
+	// 人物列表
+	for rows.Next() {
+		p := &model.People{}
+		err = rows.Scan(&p.ID, &p.Name, &p.BirthDay, &p.DeathDay)
+		if err != nil {
+			return nil, common.NewError(common.ErrorDBQueryScan, err)
+		}
+
+		data.Peoples = append(data.Peoples, p)
+	}
+
+	rows, err = db.DB().Query(allRelationSQL)
+	if err != nil {
+		return nil, common.NewError(common.ErrorDBQuery, err)
+	}
+
+	// 人物列表
+	for rows.Next() {
+		r := &model.Relation{}
+		err = rows.Scan(&r.PeopleIDA, &r.PeopleIDB, &r.Relation, &r.RelationIdx, &r.RelationBegin, &r.RelationEnd)
+		if err != nil {
+			return nil, common.NewError(common.ErrorDBQueryScan, err)
+		}
+
+		data.Relations = append(data.Relations, r)
 	}
 
 	return

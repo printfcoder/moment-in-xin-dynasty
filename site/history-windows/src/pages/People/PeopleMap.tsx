@@ -6,7 +6,7 @@ import {PeopleFormProps} from "@/pages/People/components/PeopleForm";
 const PeopleMap: React.FC<PeopleFormProps> = (props) => {
   const data = {
     nodes: [
-      {id: 'node0', size: 50},
+      {id: 'node0', size: 50, label: 'node0'},
       {id: 'node1', size: 30},
       {id: 'node2', size: 30},
       {id: 'node3', size: 30},
@@ -25,7 +25,9 @@ const PeopleMap: React.FC<PeopleFormProps> = (props) => {
       {id: 'node16', size: 15, isLeaf: true},
     ],
     edges: [
-      {source: 'node0', target: 'node1'},
+      {source: 'node0', target: 'node1', label:"1丞相"},
+      {source: 'node0', target: 'node1', label:"2丞相"},
+      {source: 'node1', target: 'node0', label:"3丞相"},
       {source: 'node0', target: 'node2'},
       {source: 'node0', target: 'node3'},
       {source: 'node0', target: 'node4'},
@@ -56,6 +58,9 @@ const PeopleMap: React.FC<PeopleFormProps> = (props) => {
         height: 1000,
         modes: {
           default: ['drag-canvas', 'zoom-canvas', 'drag-node', 'lasso-select'],
+        },
+        defaultEdge: {
+          type: 'polyline',
         },
         layout: {
           type: 'force',

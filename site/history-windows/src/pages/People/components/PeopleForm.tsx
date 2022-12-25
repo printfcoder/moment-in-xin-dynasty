@@ -12,7 +12,7 @@ import {
   addPeople,
   getPeople,
   listPeople,
-  RelationEnum,
+  relationEnum,
   deletePeople,
   updatePeople
 } from "@/services/history/listPeople";
@@ -255,7 +255,7 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
               label="关系"
               showSearch={true}
               dependencies={['name']}
-              request={RelationEnum}
+              request={relationEnum}
               rules={[
                 {
                   validator: async (_, value) => {

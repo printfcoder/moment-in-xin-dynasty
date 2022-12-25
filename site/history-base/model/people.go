@@ -31,3 +31,8 @@ type PeopleEvent struct {
 	PeopleID    uint   `json:"people_id,omitempty"`
 	Description string `json:"description,omitempty"`
 }
+
+type AllPeopleAndRelation struct {
+	Peoples   []*People   `json:"peoples,omitempty"`
+	Relations []*Relation `json:"relations,omitempty"`
+}
