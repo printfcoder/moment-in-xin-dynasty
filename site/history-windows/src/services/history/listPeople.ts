@@ -3,7 +3,6 @@
 import {request} from '@umijs/max';
 import PeopleRelation = History.PeopleRelation;
 import History from "@/services/history/typings";
-import People = History.People;
 
 let loadedRelationEnum: any[] = [];
 
@@ -19,7 +18,7 @@ export async function listPeople(
   },
   options?: { [key: string]: any },
 ) {
-  return request<Common.HTTPRsp<Common.PageData<People>>>('/api/history/people/list', {
+  return request<Common.HTTPRsp<Common.PageData<History.People>>>('/api/history/people/list', {
     method: 'GET',
     params: {
       ...params,
@@ -121,6 +120,19 @@ export async function relationEnum(options?: { [key: string]: any }) {
   })
 }
 
+
+/**
+ * 所有用户与关系数据
+ */
+export async function allPeopleAndRelation(options?: { [key: string]: any }) {
+  return request<Common.HTTPRsp<History.AllPeopleAndRelation>>('/api/history/people/all-people-and-relation', {
+    method: 'GET',
+    ...(options || {}),
+  }).then((rsp: Common.HTTPRsp<History.AllPeopleAndRelation>) => {
+    // todo some actions
+    return rsp
+  })
+}
 
 /**
  * 转成antDesign的Page格式

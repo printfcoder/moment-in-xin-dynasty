@@ -274,8 +274,7 @@ const PeopleForm: React.FC<PeopleFormProps> = (props) => {
         </ProFormList>
       </ProFormGroup>
     </ModalForm>
-  )
-    ;
+  );
 };
 
 export default PeopleForm;

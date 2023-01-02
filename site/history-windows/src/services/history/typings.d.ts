@@ -22,11 +22,11 @@ declare namespace History {
     key?: number;
     name: string;
     peopleIDA?: number;
-    peopleIDB: number;
+    peopleIDB?: number;
     relation: string;
     relationIdx: number;
-    relationBegin:  string;
-    relationEnd:  string;
+    relationBegin: string;
+    relationEnd: string;
   }
 
   type PeopleRelations = {
@@ -40,6 +40,20 @@ declare namespace History {
     total?: number;
     success?: boolean;
   };
+
+  type Relation = {
+    peopleIDA: number;
+    peopleIDB: number;
+    relation: string;
+    relationIdx?: number;
+    relationBegin?: string;
+    relationEnd?: string;
+  }
+
+  type AllPeopleAndRelation = {
+    peoples: ?   People[];
+    relations: ? Relation[]
+  }
 
   type NoticeIconItemType = 'notification' | 'message' | 'event';
 
@@ -55,8 +69,6 @@ declare namespace History {
     description?: string;
     type?: NoticeIconItemType;
   };
-
-  relationEnum
 }
 
 export default History

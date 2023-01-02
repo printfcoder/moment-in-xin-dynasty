@@ -51,6 +51,8 @@ export default {
   'pages.people.relationEnd': '终',
   'pages.people.relation': '关系',
   'pages.people.relationOrder': '顺位',
+  'pages.people.map.loading': '正在加载数据',
+  'pages.people.map.parsing': '正在解析数据',
   'pages.searchTable.titleStatus': '状态',
   'pages.searchTable.nameStatus.default': '关闭',
   'pages.searchTable.nameStatus.running': '运行中',
