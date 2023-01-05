@@ -6,6 +6,31 @@ import {allPeopleAndRelation} from "@/services/history/listPeople";
 import History from "@/services/history/typings";
 
 
+const tooltip = new G6.Tooltip({
+  offsetX: 10,
+  offsetY: 10,
+  fixToNode: [1, 0.5],
+  // the types of items that allow the tooltip show up
+  // 允许出现 tooltip 的 item 类型
+  itemTypes: ['node', 'edge'],
+  // custom the tooltip's content
+  // 自定义 tooltip 内容
+  getContent: (e: any) => {
+    const outDiv = document.createElement('div');
+    outDiv.style.width = 'fit-content';
+    outDiv.style.height = 'fit-content';
+    const model = e.item.getModel();
+    if (e.item.getType() === 'node') {
+      outDiv.innerHTML = `${model.name}`;
+    } else {
+      const source = e.item.getSource();
+      const target = e.item.getTarget();
+      outDiv.innerHTML = `来源：${source.getModel().label}<br/>去向：${target.getModel().label}`;
+    }
+    return outDiv;
+  },
+});
+
 const PeopleMap: React.FC<PeopleFormProps> = (props) => {
   const [peopleNodes, setPeopleNodes] = useState<any[]>();
   const [relationEdges, setRelationEdges] = useState<any[]>();
@@ -41,7 +66,14 @@ const PeopleMap: React.FC<PeopleFormProps> = (props) => {
           // region edge
           relations.forEach((r: History.Relation) => {
             edges.push(
-              {source: r.peopleIDA, target: r.peopleIDB, label: r.relation},
+              {
+                source: r.peopleIDA,
+                target: r.peopleIDB,
+                label: r.relation,
+                style: {
+                  endArrow: true,
+                },
+              },
             )
           })
           // endregion
@@ -63,15 +95,16 @@ const PeopleMap: React.FC<PeopleFormProps> = (props) => {
           width: 1000,
           height: 1000,
           modes: {
-            default: ['drag-canvas', 'zoom-canvas', 'drag-node', 'lasso-select'],
+            default: ['drag-canvas', 'activate-relations','zoom-canvas', 'drag-node', 'lasso-select'],
           },
           defaultEdge: {
-           // type: 'polyline',
+            type: 'quadratic',
           },
+          plugins: [tooltip],
           layout: {
             type: 'force',
             preventOverlap: true,
-            linkDistance: (d) => {
+            linkDistance: (d: any) => {
               if (d.source.id === 'node0') {
                 return 300;
               }
@@ -102,43 +135,43 @@ const PeopleMap: React.FC<PeopleFormProps> = (props) => {
       graph.render();
 
 
-     /*
-      // 边界，用于人物圈子
-      const centerNodes = graph.getNodes().filter((node: any) => !node.getModel().isLeaf);
-      graph.on('afterlayout', () => {
-        const hull1 = graph.createHull({
-          id: 'centerNode-hull',
-          type: 'bubble',
-          members: centerNodes,
-          padding: 10,
-        });
+      /*
+       // 边界，用于人物圈子
+       const centerNodes = graph.getNodes().filter((node: any) => !node.getModel().isLeaf);
+       graph.on('afterlayout', () => {
+         const hull1 = graph.createHull({
+           id: 'centerNode-hull',
+           type: 'bubble',
+           members: centerNodes,
+           padding: 10,
+         });
 
-        const hull2 = graph.createHull({
-          id: 'leafNode-hull1',
-          members: ['node6', 'node7'],
-          padding: 10,
-          style: {
-            fill: 'lightgreen',
-            stroke: 'green',
-          },
-        });
+         const hull2 = graph.createHull({
+           id: 'leafNode-hull1',
+           members: ['node6', 'node7'],
+           padding: 10,
+           style: {
+             fill: 'lightgreen',
+             stroke: 'green',
+           },
+         });
 
-        const hull3 = graph.createHull({
-          id: 'leafNode-hull2',
-          members: ['node8', 'node9', 'node10', 'node11', 'node12', 'node13'],
-          padding: 10,
-          style: {
-            fill: 'lightgreen',
-            stroke: 'green',
-          },
-        });
+         const hull3 = graph.createHull({
+           id: 'leafNode-hull2',
+           members: ['node8', 'node9', 'node10', 'node11', 'node12', 'node13'],
+           padding: 10,
+           style: {
+             fill: 'lightgreen',
+             stroke: 'green',
+           },
+         });
 
-        graph.on('afterupdateitem', (e) => {
-          hull1.updateData(hull1.members);
-          hull2.updateData(hull2.members);
-          hull3.updateData(hull3.members);
-        });
-      })*/
+         graph.on('afterupdateitem', (e) => {
+           hull1.updateData(hull1.members);
+           hull2.updateData(hull2.members);
+           hull3.updateData(hull3.members);
+         });
+       })*/
     })
   }, []);
 
