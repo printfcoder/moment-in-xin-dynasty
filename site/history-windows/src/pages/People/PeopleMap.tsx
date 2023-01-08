@@ -21,7 +21,7 @@ const tooltip = new G6.Tooltip({
     outDiv.style.height = 'fit-content';
     const model = e.item.getModel();
     if (e.item.getType() === 'node') {
-      outDiv.innerHTML = `${model.name}`;
+      outDiv.innerHTML = `${model.label}`;
     } else {
       const source = e.item.getSource();
       const target = e.item.getTarget();
@@ -58,7 +58,7 @@ const PeopleMap: React.FC<PeopleFormProps> = (props) => {
           // region node
           peoples.forEach((p: History.People) => {
             nodes.push(
-              {id: p.id, size: 50, label: p.name},
+              {id: p.id, size: 40, label: p.name},
             )
           })
           // endregion
@@ -92,36 +92,20 @@ const PeopleMap: React.FC<PeopleFormProps> = (props) => {
       if (!graph) {
         graph = new G6.Graph({
           container: ref.current,
-          width: 1000,
-          height: 1000,
+          width: 1300,
+          height: 1300,
           modes: {
-            default: ['drag-canvas', 'activate-relations','zoom-canvas', 'drag-node', 'lasso-select'],
+            default: ['drag-canvas', 'activate-relations', 'zoom-canvas', 'drag-node', 'lasso-select'],
           },
           defaultEdge: {
             type: 'quadratic',
           },
           plugins: [tooltip],
           layout: {
-            type: 'force',
+            type: 'radial',
+            unitRadius: 70,
             preventOverlap: true,
-            linkDistance: (d: any) => {
-              if (d.source.id === 'node0') {
-                return 300;
-              }
-              return 60;
-            },
-            nodeStrength: (d) => {
-              if (d.isLeaf) {
-                return -50;
-              }
-              return -10;
-            },
-            edgeStrength: (d) => {
-              if (d.source.id === 'node1' || d.source.id === 'node2' || d.source.id === 'node3') {
-                return 0.7;
-              }
-              return 0.1;
-            },
+            strictRadial: false,
           },
         });
       }
